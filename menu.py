@@ -1,16 +1,15 @@
 #import main
 import pygame as pg
+import globalsc as G
 
 panels = []
 
 buttons = []
-GREEN = 0x00FF00
-WHITE = 0xFFFFFF
 
 texts = []
 pg.init()
 
-screen = pg.Surface((1280, 720), WHITE)
+screen = pg.Surface((1280, 720), G.WHITE)
 
 class Button:
     def __init__(self, text,  pos, font, bg, screen, typ):
@@ -80,10 +79,10 @@ def start():
     buttons.append(but)
     text = Text("Start", (800, 600), "navy", 30, screen)
     texts.append(text)
-    pan = Panel((800, 450), (30, 40), GREEN, screen)
+    pan = Panel((800, 450), (30, 40), G.GREEN, screen)
     texts.append(pan)    
 def update(events):
-    screen.fill(WHITE)
+    screen.fill(G.WHITE)
     for p in panels:
         p.show()
     for b in buttons:
