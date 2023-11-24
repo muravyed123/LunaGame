@@ -12,7 +12,7 @@ pg.init()
 screen = pg.Surface((1280, 720), G.WHITE)
 
 class Button:
-    def __init__(self, text,  pos, font, bg, screen, typ):
+    def __init__(self, text,  pos, font, bg, screen):
         # Я не знаю как передавать в инит команду, которую будет выполнять кнопка при нажатии, пока пусть будет типом задаваться.
         self.x, self.y = pos
         self.font = pg.font.SysFont('arial', font)
@@ -25,8 +25,7 @@ class Button:
         self.Text = self.font.render(text, 1, pg.Color("White"))
         #self.command()
         self.change_colour()
-        if typ == 1:
-            self.command = self.exit        
+        self.command = int     
     def exit(self):
         #main.exit()
         self.text = str(self.n)
@@ -75,7 +74,8 @@ class Panel:
         pan = pg.Surface((self.w, self.h))
         screen.blit(pan, (self.x - self.w//2, self.y - self.h//2))     
 def start():
-    but = Button("Start", (600, 400), 30, "navy", screen, 1)
+    but = Button("Start", (600, 400), 30, "navy", screen)
+    but.command = but.exit
     buttons.append(but)
     text = Text("Start", (800, 600), "navy", 30, screen)
     texts.append(text)

@@ -20,7 +20,9 @@ while active:
     for event in events:
         if event.type == pg.QUIT:
             sys.exit()
+            
+    keys = pg.key.get_pressed()
     sc.fill(G.WHITE)
+    sc.blit(draw.update(events, keys), (0,0))
     sc.blit(menu.update(events), (0,0))
-    sc.blit(draw.update(events), (0,0))
     pg.display.update()
