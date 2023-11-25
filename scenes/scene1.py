@@ -22,15 +22,18 @@ def start():
     collisions.append(colis4)
     
     obj1 = Sc.Object('rect', G.BLACK, (500, 60, 80, 30))
-    lab1 = Sc.Playlabel('door here', (200, 300), G.BLACK, 30)
+    lab1 = Sc.PlayLabel('door here', (200, 300), G.BLACK, 30)
     objects.append(obj1)
     objects.append(lab1)
     
     ar1 = Sc.Area(800, 0, (40, 60), Sc.change_scene)
-    ar2 = Sc.Area(500, 450, (60, 60), Sc.create_label, ('door here', (400, 400), G.BLACK, 30))
+    ar2 = Sc.Area(500, 400, (60, 60), Sc.create_label, ('door here', (400, 400), G.BLACK, 30), Sc.delete_label, ())
     areas.append(ar1)
+    areas.append(ar2)
+    
     
 def get_scene():
+    screen.fill(G.WHITE)
     for i in collisions:
         screen.blit(i.draw(),(0,0))
     for i in objects:
@@ -49,6 +52,6 @@ def update(player, pl, vel):
             vel[1] = 0
     for i in areas:
         res, signal, param = i.is_collide(r3)
-        if res or signal != None:
+        if signal != None:
             signal(i, objects, param)
     return vel

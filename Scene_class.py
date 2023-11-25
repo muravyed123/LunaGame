@@ -40,22 +40,29 @@ class Area():
         self.signal_ex = signal_ex
         self.p1 = p1
         self.p2 = p2
+        
+        self.info = 0
         self.screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
-        self.is_collide = False
+        self.is_collid = False
     def is_collide(self, rec):
         t = self.rect.colliderect(rec)
         if t:
-            self.is_collide = True
-            return((t, self.signal, self.p1))
+            if not self.is_collid:
+                self.is_collid = True
+                return((t, self.signal, self.p1))
+            else:
+                return((t, None, None))
         else:
-            if self.is_collide:
+            #print(self.is_collid)
+            if self.is_collid:
+                self.is_collid = False  
                 return((t, self.signal_ex, self.p2))
             else: return((t, None, None))
     def draw(self):
         pg.draw.rect(self.screen, G.GREEN, self.rect)    
         self.screen.set_alpha(100)
         return(self.screen)
-class Playlabel():
+class PlayLabel():
     def __init__(self, text,  pos, color, font):
         self.x, self.y = pos
         self.font = pg.font.SysFont("Arial", font)
@@ -111,7 +118,10 @@ def change_scene(obj, scene, param):
     from draw import change_scene as change
     change(number)
 def create_label(obj, scene, param):
-    lab_n = PlayLabel(param)
+    text, pos, color, font = param
+    lab_n = PlayLabel(text, pos, color, font)
+    obj.info = len(scene)
+    scene.append(lab_n)
 def delete_label(obj, scene, param):
-    pass
+    del scene[obj.info]
     
