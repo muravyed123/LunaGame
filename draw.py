@@ -67,8 +67,8 @@ class Scene:
         self.me = importlib.import_module(f'scenes.scene{number}')
         self.me.start()
         
-    def draw(self, vel):
-        surface = self.me.get_scene()
+    def draw(self, vel, keys):
+        surface = self.me.get_scene(keys)
         #pl.move(vel)
         screen.blit(surface, (-self.camera.x + camera.width//2, self.camera.y))
         return self.me.update(player, Player(screen, player.x, player.y, player.v_y), vel)
@@ -91,8 +91,8 @@ def update(event, keys):
         vel[1] = 1
     if keys[pg.K_DOWN]:
         vel[1] = 0 
+    vel = now_scene.draw(vel, keys)
     player.draw()
-    vel = now_scene.draw(vel)
     player.move(vel)
     camera.move(player)
 

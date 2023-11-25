@@ -73,47 +73,37 @@ class PlayLabel():
         text = self.font.render(self.text, True, self.color)        
         self.screen.blit(text, (self.x, self.y))    
         return self.screen
-class PlayButton():
-    def __init__(self, text,  pos, font, bg):
+class CheckText(PlayLabel):
+    def __init__(self, text,  pos, color, font, key, command, param):
         self.x, self.y = pos
-        self.font = pg.font.SysFont('arial', font)
-        self.screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
-        self.n = 0
-        self.sost = False
-        self.rect = pg.Rect(self.x, self.y, 5, 5)
+        self.font = pg.font.SysFont("Arial", font)
+        self.color = color
         self.text = text
-        self.bg = bg
-        self.Text = self.font.render(text, 1, pg.Color("White"))
-        self.change_colour()
-        self.command = int     
-    def exit(self):
-        #main.exit()
-        self.text = str(self.n)
-        self.n += 1
-        self.Text = self.font.render(self.text, 1, pg.Color("White"))
-    def change_colour(self):
-        self.size = self.Text.get_size()   
-        self.rect = pg.Rect(self.x, self.y, self.size[0], self.size[1])
-        if self.sost:
-            fg = 'red'
-        else:
-            fg = self.bg
-        self.surface = pg.Surface(self.size)
-        self.surface.fill(fg)
-        self.surface.blit(self.Text, (0, 0))        
-    def show(self):
-        screen.blit(self.surface, (self.x, self.y))
-    def click(self, event):
-        x, y = pg.mouse.get_pos()
-        if event.type == pg.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(x, y):
-                self.sost = pg.mouse.get_pressed()[0]
-                self.command()
-                self.change_colour()
-        else:
-            self.sost = False
-            self.change_colour()    
-def change_scene(obj, scene, param):
+        self.key = key
+        self.screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)   
+        self.command = command
+        self.param = param
+    def click(self, keys):
+        if keys[self.key]:
+            self.command(self.param)  
+class Sprite():
+    def __init__(self, texture, pos, size = None):
+        print(texture)
+        self.image = pg.image.load(texture)
+        self.x = pos[0]
+        self.y = pos[1]
+        self.size = [self.image.get_width(), self.image.get_height()]
+        if size!= None:
+            self.size = size
+        self.rect = pg.Rect(self.x, self.y, size[0], size[1])
+        self.screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE) 
+        self.image = pg.transform.scale(
+            self.image, (self.size[0], self.size[1]))        
+        self.screen.blit(self.image, self.rect)
+    def draw(self):
+        return(self.screen)
+        
+def change_scene(obj = None, scene = None, param = None):
     number = 1
     from draw import change_scene as change
     change(number)
@@ -122,6 +112,11 @@ def create_label(obj, scene, param):
     lab_n = PlayLabel(text, pos, color, font)
     obj.info = len(scene)
     scene.append(lab_n)
-def delete_label(obj, scene, param):
+def delete_obj(obj, scene, param):
     del scene[obj.info]
-    
+def create_checktext(obj, scene, param):
+    text, pos, color, font, key, command, par = param
+    cht_n = CheckText(text, pos, color, font, key, command, par)
+    cht_n.command = command
+    obj.info = len(scene)
+    scene.append(cht_n)
