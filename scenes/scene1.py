@@ -10,6 +10,7 @@ objects = []
 areas = []
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
 
+textures = ['materials\Luna.jpg']
 def start():
     global collisions
     colis1 = Sc.CollisionShape(0, 0, (20, 460))
@@ -21,25 +22,32 @@ def start():
     collisions.append(colis3)
     collisions.append(colis4)
     
-    obj1 = Sc.Object('rect', G.BLACK, (500, 60, 80, 30))
-    lab1 = Sc.PlayLabel('door here', (200, 300), G.BLACK, 30)
+    obj1 = Sc.Object('rect', G.BLACK, (500, 60, 80, 60))
+    lab1 = Sc.PlayLabel('you can escape ->', (200, 400), G.BLACK, 30)
+    lab2 = Sc.PlayLabel('you can go here ->', (200, 10), G.BLACK, 30)
+    lab3 = Sc.PlayLabel('OMG Luna', (790, 200), G.BLACK, 30)
+    spr1 = Sc.Sprite(textures[0], (800, 350), (100,100))
     objects.append(obj1)
     objects.append(lab1)
+    objects.append(lab2)
+    objects.append(lab3)
+    objects.append(spr1)
     
     ar1 = Sc.Area(800, 0, (40, 60), Sc.change_scene)
-    ar2 = Sc.Area(500, 400, (60, 60), Sc.create_label, ('door here', (400, 400), G.BLACK, 30), Sc.delete_label, ())
+    ar2 = Sc.Area(500, 400, (60, 60), Sc.create_checktext, ('press [E] to change scene', (400, 300), G.BLACK, 30, pg.K_e, Sc.change_scene, None), Sc.delete_obj)
     areas.append(ar1)
     areas.append(ar2)
-    
-    
-def get_scene():
+def get_scene(keys):
+    screen = Sc.screen
     screen.fill(G.WHITE)
     for i in collisions:
-        screen.blit(i.draw(),(0,0))
+        i.draw()
     for i in objects:
-        screen.blit(i.draw(),(0,0))
+        i.draw()
+        if type(i) == Sc.CheckText:
+            i.click(keys)
     for i in areas:
-        screen.blit(i.draw(),(0,0))
+        i.draw()
     return(screen)
 def update(player, pl, vel):
     r1, r2 = pl.move_x(vel[0]), pl.move((-vel[0], vel[1]))

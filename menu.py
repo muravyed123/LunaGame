@@ -76,11 +76,11 @@ class Panel:
 def start():
     but = Button("Start", (600, 400), 30, "navy", screen)
     but.command = but.exit
-    buttons.append(but)
+    #buttons.append(but)
     text = Text("Start", (800, 600), "navy", 30, screen)
-    texts.append(text)
+    #texts.append(text)
     pan = Panel((800, 450), (30, 40), G.GREEN, screen)
-    texts.append(pan)    
+    #panels.append(pan)    
 def update(events):
     screen.fill(G.WHITE)
     for p in panels:

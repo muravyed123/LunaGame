@@ -11,11 +11,14 @@ areas = []
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
 def start():
     pass
-def get_scene():
+def get_scene(keys):
+    screen.fill(G.WHITE)
     for i in collisions:
         screen.blit(i.draw(),(0,0))
     for i in objects:
         screen.blit(i.draw(),(0,0))
+        if type(i) == Sc.CheckText:
+            i.click(keys)
     for i in areas:
         screen.blit(i.draw(),(0,0))
     return(screen)
@@ -29,7 +32,7 @@ def update(player, pl, vel):
             player.push(i.push_on(r3))
             vel[1] = 0
     for i in areas:
-        res, signal = i.is_collide(r3)
-        if res:
-            signal()
+        res, signal, param = i.is_collide(r3)
+        if signal != None:
+            signal(i, objects, param)
     return vel

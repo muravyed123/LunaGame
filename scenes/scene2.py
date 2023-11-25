@@ -12,13 +12,17 @@ screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
 def start():
     colis1 = Sc.CollisionShape(700, 300, (80, 60))
     collisions.append(colis1)
-def get_scene():
+def get_scene(keys):
+    screen = Sc.screen
+    screen.fill(G.WHITE)
     for i in collisions:
-        screen.blit(i.draw(),(0,0))
+        i.draw()
     for i in objects:
-        screen.blit(i.draw(),(0,0))
+        i.draw()
+        if type(i) == Sc.CheckText:
+            i.click(keys)
     for i in areas:
-        screen.blit(i.draw(),(0,0))
+        i.draw()
     return(screen)
 def update(player, pl, vel):
     r1, r2 = pl.move_x(vel[0]), pl.move((-vel[0], vel[1]))
@@ -30,7 +34,7 @@ def update(player, pl, vel):
             player.push(i.push_on(r3))
             vel[1] = 0
     for i in areas:
-        res, signal = i.is_collide(r3)
-        if res:
-            signal()
+        res, signal, param = i.is_collide(r3)
+        if signal != None:
+            signal(i, objects, param)
     return vel
