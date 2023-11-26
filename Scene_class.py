@@ -1,6 +1,7 @@
 import pygame as pg
 import globalsc as G
 
+screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
 class CollisionShape():
     def __init__(self, x , y, size):
         self.x = x
@@ -15,22 +16,22 @@ class CollisionShape():
         else:
             return(y1)
     def draw(self):
-        screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
-        screen.fill(G.WHITE)
         pg.draw.rect(screen, G.BLUE, self.rect)    
-        screen.set_alpha(100)
         return(screen)
 class Object():
     def __init__(self, fig, color, parameters,x = 0, y = 0):
-        self.screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
-        if fig == 'rect':
-            pg.draw.rect(self.screen, color, parameters)
-        elif fig == 'çircle':
-            pg.draw.circle(self.screen, color, parameters)
-        elif fig == 'polygon':
-            pg.draw.polygon(self.screen, color, parameters)
+        self.fig = fig
+        self.x = x
+        self.y = y
+        self.color = color
+        self.parameters = parameters
     def draw(self):
-        return(self.screen)
+        if self.fig == 'rect':
+            pg.draw.rect(screen, self.color, self.parameters)
+        elif fig == 'çircle':
+            pg.draw.circle(screen, self.color, self.parameters)
+        elif fig == 'polygon':
+            pg.draw.polygon(screen, self.color, self.parameters)
 class Area():
     def __init__(self, x , y, size, signal, p1 = None, signal_ex = None, p2 = None):
         self.x = x
@@ -42,7 +43,6 @@ class Area():
         self.p2 = p2
         
         self.info = 0
-        self.screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
         self.is_collid = False
     def is_collide(self, rec):
         t = self.rect.colliderect(rec)
@@ -59,20 +59,16 @@ class Area():
                 return((t, self.signal_ex, self.p2))
             else: return((t, None, None))
     def draw(self):
-        pg.draw.rect(self.screen, G.GREEN, self.rect)    
-        self.screen.set_alpha(100)
-        return(self.screen)
+        pg.draw.rect(screen, G.GREEN, self.rect)    
 class PlayLabel():
     def __init__(self, text,  pos, color, font):
         self.x, self.y = pos
         self.font = pg.font.SysFont("Arial", font)
         self.color = color
         self.text = text
-        self.screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
     def draw(self):
         text = self.font.render(self.text, True, self.color)        
-        self.screen.blit(text, (self.x, self.y))    
-        return self.screen
+        screen.blit(text, (self.x, self.y))    
 class CheckText(PlayLabel):
     def __init__(self, text,  pos, color, font, key, command, param):
         self.x, self.y = pos
@@ -80,7 +76,6 @@ class CheckText(PlayLabel):
         self.color = color
         self.text = text
         self.key = key
-        self.screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)   
         self.command = command
         self.param = param
     def click(self, keys):
@@ -88,7 +83,6 @@ class CheckText(PlayLabel):
             self.command(self.param)  
 class Sprite():
     def __init__(self, texture, pos, size = None):
-        print(texture)
         self.image = pg.image.load(texture)
         self.x = pos[0]
         self.y = pos[1]
@@ -96,13 +90,37 @@ class Sprite():
         if size!= None:
             self.size = size
         self.rect = pg.Rect(self.x, self.y, size[0], size[1])
-        self.screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE) 
         self.image = pg.transform.scale(
             self.image, (self.size[0], self.size[1]))        
-        self.screen.blit(self.image, self.rect)
     def draw(self):
-        return(self.screen)
-        
+        screen.blit(self.image, self.rect)
+class AnimatedSprite():
+    def __init__(self, images, speed, stop, pos, size = None):
+        self.images = images
+        self.image = pg.image.load(images[0])
+        self.x = pos[0]
+        self.y = pos[1]
+        self.size = [self.image.get_width(), self.image.get_height()]
+        if size!= None:
+            self.size = size
+        self.rect = pg.Rect(self.x, self.y, size[0], size[1])
+        self.n = 0
+        self.speed = speed
+        self.stop = stop
+    def draw(self):
+        if self.n != len(self.images ) * self.speed:
+            self.image = pg.image.load(self.images[self.n//self.speed])
+            self.image = pg.transform.scale(
+                self.image, (self.size[0], self.size[1]))   
+            self.n += 1
+            if self.n == len(self.images) * self.speed and not self.stop:
+                self.n = 0
+            screen.blit(self.image, self.rect)    
+        else:
+            self.image = pg.image.load(self.images[-1])
+            self.image = pg.transform.scale(
+                self.image, (self.size[0], self.size[1]))   
+            screen.blit(self.image, self.rect)              
 def change_scene(obj = None, scene = None, param = None):
     number = 1
     from draw import change_scene as change
@@ -120,3 +138,7 @@ def create_checktext(obj, scene, param):
     cht_n.command = command
     obj.info = len(scene)
     scene.append(cht_n)
+
+def give_list_an(file_name):
+    anim = [file_name + '/' + str(x) + '.png' for x in range(1, G.howmanyFiles(file_name) + 1)]
+    return anim

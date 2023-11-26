@@ -42,6 +42,7 @@ class Player:
         self.v_y += self.gravity
         if vel == 1 and self.is_on_floor:
             self.v_y = self.jump
+        if self.is_on_floor and self.v_y != self.gravity:
             self.is_on_floor = False
                 
         if new_y >= self.floor - 20:
