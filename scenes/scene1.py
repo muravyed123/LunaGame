@@ -10,7 +10,7 @@ objects = []
 areas = []
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
 
-textures = ['materials\Luna.jpg']
+textures = ['materials\Luna.jpg', 'materials\door.jpg', 'materials\wall1.jpg']
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
 def start():
     global collisions
@@ -18,6 +18,15 @@ def start():
     colis2 = Sc.CollisionShape(1000, 0, (20, 460))
     colis3 = Sc.CollisionShape(300, 250, (60, 60))
     colis4 = Sc.CollisionShape(500, 60, (80, 60))
+    
+    spr2 = Sc.Sprite(textures[1], (700, 200), (100, 250))
+    spr3 = Sc.Sprite(textures[1], (300, 200), (100, 250))
+    wall = Sc.Sprite(textures[2], (20, 0), (980, 450))
+    
+    objects.append(wall)
+    objects.append(spr2)
+    objects.append(spr3)
+    
     collisions.append(colis1)
     collisions.append(colis2)
     collisions.append(colis3)

@@ -72,7 +72,13 @@ class Panel:
         self.rect = pg.Rect(self.x, self.y, self.w, self.h)      
     def show(self):
         pan = pg.Surface((self.w, self.h))
-        screen.blit(pan, (self.x - self.w//2, self.y - self.h//2))     
+        screen.blit(pan, (self.x - self.w//2, self.y - self.h//2))  
+class Background:
+    def __init__(self, screen):
+        self.bg = pg.image.load("materials\sixth.jpg").convert()
+        self.bg = pg.transform.scale(self.bg, (G.WIDTH, G.HEIGHT))
+    def show(self):
+        screen.blit(self.bg, (0, 0))
 def start():
     but = Button("Start", (600, 400), 30, "navy", screen)
     but.command = but.exit
@@ -83,6 +89,7 @@ def start():
     #panels.append(pan)    
 def update(events):
     screen.fill(G.WHITE)
+    #Background(screen).show()
     for p in panels:
         p.show()
     for b in buttons:
