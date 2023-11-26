@@ -62,21 +62,20 @@ class Player:
         self.x += self.v * vel
         return pg.Rect(self.x, self.y, self.rect.width, self.rect.height)
     def move_y(self, vel):
-        new_y = self.y
-
-        new_y += self.v_y
+        new_y = self.y      
         if vel == 1 and self.is_on_floor:
-            self.v_y = self.jump
-        if self.is_on_floor and abs(self.v_y) >= 1:
-            self.is_on_floor = False
-                
+            self.v_y = self.jump  
+        new_y += self.v_y
+        self.v_y += self.gravity          
+        if self.is_on_floor and abs(self.v_y) > 1:
+            self.is_on_floor = False            
         if new_y >= self.floor - self.rect.height:
             new_y = self.floor - self.rect.height
             if vel != 1:
                 self.v_y = 0
             self.is_on_floor = True
-        self.v_y += self.gravity
         self.y = new_y
+        #if self.animated: print(self.v_y, self.is_on_floor, vel) 
         return pg.Rect(self.x, self.y, self.rect.width, self.rect.height)
     def push(self, y):
         self.y = y
@@ -114,7 +113,8 @@ class Scene:
         surface = self.me.get_scene(keys)
         #pl.move(vel)
         screen.blit(surface, (-self.camera.x + camera.width//2, self.camera.y))
-        return self.me.update(player, Player(screen, player.x, player.y, player.v_y, {}, False), vel)
+        pl =  Player(screen, player.x, player.y, player.v_y, {}, False)
+        return self.me.update(player, pl, vel)
 
 def change_scene(number):
     global now_scene

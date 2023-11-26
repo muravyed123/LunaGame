@@ -59,6 +59,7 @@ def get_scene(keys):
         i.draw()
     return(screen)
 def update(player, pl, vel):
+    pl.is_on_floor = player.is_on_floor
     r1, r2 = pl.move_x(vel[0]), pl.move((-vel[0], vel[1]))
     r3 = pl.move((vel[0] ,0))
     for i in collisions:
