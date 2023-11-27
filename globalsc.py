@@ -24,7 +24,7 @@ def crop_image(file, count_x, count_y, need, path):
             if number in need:
                 n_path = path + str(number - need[0] + 1) + '.png'
                 im_crop.save(n_path)
-#crop_image('materials/cat_Anim.png', 4, 13, [14,15,16,17,18,19], 'Animations/bl_cat_sit/')
+#crop_image('materials/catwalk.png', 3, 3, [x for x in range(1,9)], 'Animations/wh_cat_walk/')
 def howmanyFiles(path):
     dirs = os.listdir(path)
     return(len(dirs))

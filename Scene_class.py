@@ -1,7 +1,7 @@
 import pygame as pg
 import globalsc as G
 
-screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
+screen = pg.Surface((G.WIDTH * 2, G.HEIGHT), G.WHITE)
 class CollisionShape():
     def __init__(self, x , y, size):
         self.x = x
@@ -9,12 +9,12 @@ class CollisionShape():
         self.rect = pg.Rect((x, y, size[0], size[1]))
     def is_collide(self, rec):
         return(self.rect.colliderect(rec))
-    def push_on(self, rec):
+    def push_on(self, rec, vel):
         y1, y2 = self.y - rec.height, self.y + self.rect.height
-        if abs(rec.y - y1) > abs(rec.y - y2):
-            return(y2)
-        else:
+        if vel > 0 :
             return(y1)
+        else:
+            return(y2)
     def draw(self):
         pg.draw.rect(screen, G.BLUE, self.rect)    
         return(screen)
@@ -103,10 +103,10 @@ class AnimatedSprite():
         self.size = [self.image.get_width(), self.image.get_height()]
         if size!= None:
             self.size = size
-        self.rect = pg.Rect(self.x, self.y, size[0], size[1])
         self.n = 0
         self.speed = speed
         self.stop = stop
+        self.rect = pg.Rect(self.x, self.y, size[0], size[1])
     def draw(self):
         if self.n != len(self.images ) * self.speed:
             self.image = pg.image.load(self.images[self.n//self.speed])
@@ -121,6 +121,16 @@ class AnimatedSprite():
             self.image = pg.transform.scale(
                 self.image, (self.size[0], self.size[1]))   
             screen.blit(self.image, self.rect)              
+class KinematicBody():
+    def __init__(self, obj, typ, parameters):
+        self.obj = obj
+        self.typ = typ
+        self.p = parameters
+    def move(self):
+        if self.typ == 1:
+            self.obj.rect.x += self.p['speed'][0]
+            self.obj.rect.y += self.p['speed'][1]
+        
 def change_scene(obj = None, scene = None, param = None):
     number = 1
     from draw import change_scene as change
