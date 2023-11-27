@@ -64,13 +64,14 @@ def get_scene(keys):
         i.draw()
     return(screen)
 def update(player, pl, vel):
+    pl.is_on_floor = player.is_on_floor
     r1, r2 = pl.move_x(vel[0]), pl.move((-vel[0], vel[1]))
     r3 = pl.move((vel[0] ,0))
     for i in collisions:
         if i.is_collide(r1): 
             vel[0] = 0
         if i.is_collide(r2):
-            player.push(i.push_on(r3))
+            player.push(i.push_on(r3, player.v_y))
             vel[1] = 0
     for i in areas:
         res, signal, param = i.is_collide(r3)
