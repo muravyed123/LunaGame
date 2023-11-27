@@ -4,14 +4,20 @@ import globalsc as G
 
 import Scene_class as Sc
 
+import battle_scene as Bscene
 screen = pg.Surface((1280, 720), G.WHITE) 
 now_scene = None
+
+last_scene = None
+in_battle = False
+
+
 class Camera:
     def __init__(self, active):
         self.y = 0
         self.x = G.WIDTH//2
         self.width = G.WIDTH
-        self.v =  -2
+        self.v =  -1
         self.active = active
     def move(self, player):
         r = self.x - player.x
@@ -121,11 +127,27 @@ class Scene:
         screen.blit(surface, (-self.camera.x + camera.width//2, self.camera.y))
         pl =  Player(screen, player.x, player.y, player.v_y, {}, False)
         return self.me.update(player, pl, vel)
+class BattleScene:
+    def __init__(self, number):
+        self.number = number
+        self.me = Bscene
+        self.me.start(number)
+        
+    def draw(self, vel, keys):
+        surface = self.me.get_scene(keys)
+        self.me.update(vel)
+        screen.blit(surface, (0, 0))
+        return (0, 0)   
 
 def change_scene(number):
     global now_scene
     now_scene = Scene(number + 1, player, camera)
-        
+
+def go_in_battle(number):
+    global now_scene, last_scene, in_battle
+    last_scene = now_scene
+    now_scene = BattleScene(number)
+    in_battle = True
 camera = Camera(True)
 animations = {'walk' : [Sc.give_list_an('Animations/wh_cat_walk'), 5], 
                      'jump' : [Sc.give_list_an('Animations/wh_cat_jump'), 8], 
@@ -143,9 +165,12 @@ def update(event, keys):
         vel[1] = 1
     if keys[pg.K_DOWN]:
         vel[1] = 0 
+        if in_battle:
+            vel[1] = -1
     vel = now_scene.draw(vel, keys)
-    player.draw()
-    player.move(vel)
-    camera.move(player)
+    if not in_battle:
+        player.draw()
+        player.move(vel)
+        camera.move(player)
 
     return(screen)

@@ -32,7 +32,7 @@ def start():
     collisions.append(colis3)
     collisions.append(colis4)
     
-    obj1 = Sc.Object('rect', G.BLACK, (500, 60, 80, 60))
+    obj1 = Sc.Object('rect', G.BLACK, (500, 60, 80, 60, 30))
     lab1 = Sc.PlayLabel('you can escape ->', (200, 400), G.BLACK, 30)
     lab2 = Sc.PlayLabel('you can go here ->', (200, 10), G.BLACK, 30)
     lab3 = Sc.PlayLabel('OMG Luna', (790, 200), G.BLACK, 30)
@@ -47,7 +47,7 @@ def start():
     objects.append(anspr1)
     objects.append(anspr2)
     
-    ar1 = Sc.Area(800, 0, (40, 60), Sc.change_scene)
+    ar1 = Sc.Area(800, 400, (40, 60), Sc.go_in_btl, (1))
     ar2 = Sc.Area(500, 400, (60, 60), Sc.create_checktext, ('press [E] to change scene', (400, 300), G.BLACK, 30, pg.K_e, Sc.change_scene, None), Sc.delete_obj)
     areas.append(ar1)
     areas.append(ar2)
