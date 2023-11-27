@@ -33,6 +33,7 @@ class Player:
         self.animations = animations
         self.timer = 0
         self.animated = animated
+        self.add_x = 0
         self.flip_h = True
     def move(self, vector):
         self.move_x(vector[0])
@@ -54,8 +55,10 @@ class Player:
             #print(new_animation)
             if vector[0]>0:
                 self.flip_h = False
+                self.add_x = 0
             elif vector[0] < 0:
                 self.flip_h = True
+                self.add_x = 20
         self.rect = pg.Rect(self.x, self.y, self.rect.width, self.rect.height)
         return(self.rect)
     def move_x(self, vel):
@@ -65,6 +68,7 @@ class Player:
         new_y = self.y      
         if vel == 1 and self.is_on_floor:
             self.v_y = self.jump  
+            self.timer = 0
         new_y += self.v_y
         self.v_y += self.gravity          
         if self.is_on_floor and abs(self.v_y) > 1:
@@ -84,6 +88,7 @@ class Player:
         self.v_y = 0    
     def draw(self):
         images = self.animations[self.animation][0]
+        #print(images)
         timer = int(self.timer//1)    
         if timer < len(images):
             #print(timer)
@@ -97,7 +102,8 @@ class Player:
         image = pg.transform.scale(
                 image, (self.rect.width * 1.32, self.rect.height *1.32))   
         image = pg.transform.flip(image, self.flip_h, False)
-        screen.blit(image, (self.x - camera.x +camera.width//2, self.y))  
+        #pg.draw.rect(screen, G.BLACK, (self.rect.x - camera.x + camera.width // 2, self.y, self.rect.width, self.rect.height))
+        screen.blit(image, (self.x - camera.x +camera.width//2 - self.add_x, self.y))  
         #pg.draw.circle(screen, G.BLACK, (self.x - camera.x +camera.width//2, self.y), 5)
         pg.draw.rect(screen, G.BLACK, (0, self.floor, 1280, 20), 2)
         
@@ -122,8 +128,8 @@ def change_scene(number):
         
 camera = Camera(True)
 animations = {'walk' : [Sc.give_list_an('Animations/wh_cat_walk'), 5], 
-                     'jump' : [Sc.give_list_an('Animations/wh_cat_walk'), 3], 
-                     'stay' : [Sc.give_list_an('Animations/wh_cat_walk'), 5] }
+                     'jump' : [Sc.give_list_an('Animations/wh_cat_jump'), 8], 
+                     'stay' : [Sc.give_list_an('Animations/wh_cat_stay'), 10] }
 player = Player(screen, 100, 200, 0, animations)
 change_scene(0)
 def update(event, keys):
