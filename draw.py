@@ -153,7 +153,6 @@ animations = {'walk' : [Sc.give_list_an('Animations/wh_cat_walk'), 5],
                      'jump' : [Sc.give_list_an('Animations/wh_cat_jump'), 8], 
                      'stay' : [Sc.give_list_an('Animations/wh_cat_stay'), 10] }
 player = Player(screen, 100, 200, 0, animations)
-change_scene(0)
 def update(event, keys):
     screen.fill(G.WHITE)
     vel = [0,0]
