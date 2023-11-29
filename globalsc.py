@@ -14,6 +14,8 @@ GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 WIDTH = 1280
 HEIGHT = 720
+name = 'Kitty'
+level = 1
 def crop_image(file, count_x, count_y, need, path):
     im = Image.open(file)    
     width, height = im.size

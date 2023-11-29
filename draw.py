@@ -8,7 +8,7 @@ import battle_scene as Bscene
 screen = pg.Surface((1280, 720), G.WHITE) 
 now_scene = None
 
-last_scene = None
+last_scene = 1
 in_battle = False
 
 
@@ -131,7 +131,8 @@ class BattleScene:
     def __init__(self, number):
         self.number = number
         self.me = Bscene
-        self.me.start(number)
+        print(last_scene)
+        self.me.start(number, last_scene)
         
     def draw(self, vel, keys):
         surface = self.me.get_scene(keys)
@@ -140,12 +141,14 @@ class BattleScene:
         return (0, 0)   
 
 def change_scene(number):
-    global now_scene
-    now_scene = Scene(number + 1, player, camera)
+    global now_scene, in_battle
+    now_scene = Scene(number, player, camera)
+    in_battle = False
 
 def go_in_battle(number):
     global now_scene, last_scene, in_battle
-    last_scene = now_scene
+    if now_scene != None: 
+        last_scene = now_scene.number
     now_scene = BattleScene(number)
     in_battle = True
 camera = Camera(True)
@@ -153,7 +156,6 @@ animations = {'walk' : [Sc.give_list_an('Animations/wh_cat_walk'), 5],
                      'jump' : [Sc.give_list_an('Animations/wh_cat_jump'), 8], 
                      'stay' : [Sc.give_list_an('Animations/wh_cat_stay'), 10] }
 player = Player(screen, 100, 200, 0, animations)
-change_scene(0)
 def update(event, keys):
     screen.fill(G.WHITE)
     vel = [0,0]
