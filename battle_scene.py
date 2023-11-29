@@ -7,24 +7,43 @@ import random
 
 objects = []
 attacks = []
+buttons = []
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
-bord = (490, 350, 230, 230, 5)
+bord = (525, 350, 230, 230, 5)
 player = None
-max_health = 100
+max_health = 50
 health = None
+attack = False
 all_at = [( 'materials/arrow.png',(100,100), (70,20))]
 bosses = []
+arrows_types = []
+arrow = 'materials/arrow2.png'
+boss = None
+boss_hp = 100
+animation = None
+ready = True
+now_spawn = 'cant'
+now_button = '-1'
+now_score = 0
+now_kick = 0
+
+
 def in_bosses():
     global bosses
-    bosses = [[[(create_random_coord, 0) for x in range(20)
-        ],
+    bosses = [[(['materials/tar_1.png', 'materials/tar_2.png', 'materials/tar_3.png'], [(515, 100), (515, 100), (515, 100)], [(250, 250), (250, 250), (250, 250)], [1, 0, 0]),
+        [(create_random_coord, 0) for x in range(1)
+        ] + ['Çucaracha applauds!', 5],  [(create_random_coord, 0) for x in range(5)
+        ] + ['Çucaracha applauds faster!', 5],  [(create_random_coord, 0) for x in range(10)
+        ] + ['Çucaracha laughs!', 5],  [(create_random_coord, 0) for x in range(20)
+        ] + ['Auuufff', 5]
             ]
               ]     
 pg.font.init()
 now_played = None
 now_scene = 0
-timer = 0
-spawn = True
+timer =  - 1/G.FPS
+b_tim = -1/ G.FPS
+can_spawn = True
 
 class Player:
     def __init__(self, x, y, typ, health):
@@ -75,7 +94,7 @@ class Object():
         self.parameters = parameters
     def draw(self):
         if self.fig == 'rect':
-            x, y, w, h, r = self.parameters
+            x, y, w, h, r = tuple(self.parameters)
             pg.draw.rect(screen, self.color, (x, y, w, h), r)
 class Label():
     def __init__(self, text,  pos, color, font, font_name):
@@ -110,7 +129,98 @@ class Health():
     def hit(self, time):
         self.color = G.RED
         self.timer = -1 - time
-            
+class Boss:
+    def __init__(self, textures, positions, sizes, can_move):
+        self.textures = []
+        self.abs_pos = []
+        for i in range(len(textures)):
+            image = pg.image.load(textures[i]) 
+            self.textures.append(pg.transform.scale(image, (sizes[i][0], sizes[i][1])))
+            self.abs_pos.append(positions[i])
+        self.positions = positions
+        self.can_move = can_move
+        self.vel = [(0.05,0.1)] * sum(can_move)
+        self.n = 0
+    def draw(self):
+        self.n = 0
+        for i in range(len(self.textures)):
+            screen.blit(self.textures[i], self.positions[i])
+            if self.can_move[i] == 1:
+                self.move(i)
+    def move(self, i):
+        vel = self.vel[self.n]
+        if abs(self.positions[i][0] - self.abs_pos[i][0]) >= 3:
+            self.vel[self.n]  = ( -vel[0], vel[1])
+            vel = (-vel[0], vel[1])
+        elif abs(self.positions[i][1] - self.abs_pos[i][1]) >= 3:
+            self.vel[self.n] = (vel[0], -vel[1])
+            vel = (vel[0], -vel[1])
+        self.positions[i] = (self.positions[i][0] + vel[0], self.positions[i][1] + vel[1])
+        self.n += 1
+class Animation():
+    def __init__(self, obj, speed):
+        self.e = random.randint(0,1)
+        self.speed = speed
+        self.obj = obj
+    def animate(self):
+        if self.e == 0:
+            self.obj.parameters[0] += self.speed/2
+            self.obj.parameters[2] -= self.speed
+            if self.obj.parameters[2] <= 10:
+                return False
+        elif self.e == 1:
+            self.obj.parameters[1] += self.speed/2
+            self.obj.parameters[3] -= self.speed
+            if self.obj.parameters[3] <= 10:
+                return False
+        self.speed += 1/ G.FPS * 5
+        return True
+class Button():
+    def __init__(self, pos, fig, key, color):
+        self.x = pos[0]
+        self.y = pos[1]
+        self.fig = fig
+        self.key = key
+        self.color = color
+        self.width = 100
+        self.height = 80
+        self.vel = (0,0)
+        self.need_move = False
+        self.n_x = 0
+        self.command = None
+        self.can_press = False
+    def draw(self, keys):
+        if keys[self.key]:
+            pg.draw.rect(screen, G.RED, (self.x, self.y, self.width, self.height))
+            if self.can_press:
+                press(self.key, True)
+        else:
+            if self.can_press:
+                press(self.key, False)            
+            pg.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+        if self.fig == 'rec':
+            pg.draw.rect(screen, (255,255,255), (self.x + 20, self.y + 10, self.width - 40, self.height - 20), 5)
+        elif self.fig == 'cir':
+            pg.draw.circle(screen, (255,255,255), (self.x + self.width // 2, self.y + self.height//2), self.height - 45, 5)
+        elif self.fig == 'tri':
+            pg.draw.polygon(screen, (255,255,255), [[self.x + 20, self.y + 10], [self.x + self.width - 20, self.y + 10], [self.x + self.width//2, self.y + self.height - 10]], 5)
+        if self.need_move:
+            self.move()
+    def move(self):
+        self.x += self.vel[0]
+        self.y += self.vel[1]
+        
+        self.vel = (self.vel[0] * 1.05, self.vel[1] * 1.05)
+        if abs(self.x - self.n_x) <= abs(self.vel[0]):
+            self.end_move()
+    def start_move(self, end_pos, time, command):
+        self.n_x = end_pos[0]
+        self.vel = ((end_pos[0] - self.x)/(time * G.FPS), (end_pos[1] - self.y)/(time * G.FPS) )
+        self.need_move = True
+        self.command = command
+    def end_move(self):
+        self.need_move = False       
+        self.command(self)
         
 class Attack():
     def __init__(self, pos, angle, speed, texture, size, rect_size):
@@ -156,50 +266,149 @@ class Attack():
                 break
             #pg.draw.circle(screen, G.BLUE, i, 5)
         return(t)
-        
-
-def start(number):
-    global player, health, now_played
-    borders = Object('rect', G.WHITE, bord)
-    objects.append(borders)
-    player = Player(640, 400, number, 100)
-    s = Label(G.name, (390 , 600 ), (255, 255, 255), 30, 'showcardgothic')
-    s1 = Label('HP', (610 , 600 ), (255, 255, 255), 30, 'showcardgothic')
-    s2 = Label('LV ' + str(G.level), (510 , 600 ), (255, 255, 255), 30, 'showcardgothic')
-    health = Health((680, 600), 'showcardgothic')
-    objects.append(s)
-    objects.append(s1)
-    objects.append(s2)
-    objects.append(health)
-    in_bosses()
-    now_played = bosses[number-1]
+    
 def spawn():
     global timer
-    time_spawn = 10/ len(now_played[now_scene])
+    time_spawn = 10/ (len(now_played[now_scene]))
     new_timer = (timer + 1/G.FPS)
     if math.floor(new_timer)  != math.floor(timer):
-        if math.floor(new_timer) == len(now_played[now_scene]):
+        if math.floor(new_timer)  == len(now_played[now_scene]) - 2:
             spawn_end()
             return None
         at1 = now_played[now_scene][math.floor(new_timer)]
         attacks.append(give_Attack(at1[0](), at1[1]))
     timer = new_timer
 def spawn_end():
-    global spawn
-    spawn = False
-def get_scene(keys):
-    screen.fill(G.BLACK)
-    for i in objects:
-        i.draw()
-    for i in attacks:
-        i.draw()
-        if i.is_collide(player.rect):
-            player.hit()
-        i.move()
-    player.draw()
-    if spawn:
-        spawn()
-    return(screen)
+    global can_spawn, animation
+    can_spawn = False
+    animation = Animation(objects[0], 4)
+def press(key, pres):
+    global b_tim, now_button, now_kick, now_score
+    if key == pg.K_UP:
+        but = 4
+    elif key == pg.K_RIGHT:
+        but = 3
+    elif key == pg.K_DOWN:
+        but = 2
+    elif key == pg.K_LEFT:
+        but = 1
+    if now_button == but and not pres:
+        now_button = 0
+        but = 0
+    #print(but, arrow_types, now_kick)
+    if but != now_button and pres:
+        now_button = but
+        b_tim = 0
+        if arrow_types[now_kick] == but:
+            now_score += 1
+        now_kick += 1
+    if now_kick == len(arrow_types):
+        damage_boss(now_score)
+def draw_arrow():
+    global timer
+    timer += 1/G.FPS
+    count = now_played[now_scene][-1]
+    num = math.floor(timer * count// 5)
+    if num >=count:
+        timer = -1/G.FPS
+        return False
+    else:
+        image = pg.image.load(arrow) 
+        size = (100, 100)
+        image = pg.transform.scale(image, (size[0], size[1]))
+        angle = 90 * arrow_types[num]
+        image = pg.transform.rotate(image, angle)   
+        image.set_alpha(255 * (timer* count - num*5))
+        screen.blit(image, (G.WIDTH//2 - size[0]//2, 350))
+        return True
+def draw_timer():
+    global timer
+    timer += 1/G.FPS
+    time = 4 - timer
+    if time <= 0:
+        timer = -1/G.FPS
+        return False
+    else:
+        pg.draw.rect(screen, G.RED, (G.WIDTH//2- 200 , G.HEIGHT // 2 - 50, time * 400 // 4, 40))
+        return True    
+def damage_boss(damage):
+    global now_spawn , timer
+    now_spawn = 'damage'
+    timer = 0
+    for i in buttons:
+        i.can_press = False  
+def show_text():
+    global timer, now_spawn
+    now_spawn = 'text'
+    timer = 0
+def draw_damage(count):
+    global timer
+    timer += 1/G.FPS
+    pg.draw.rect(screen, (82, 8, 78), (440, 350, 400 , 40))
+    if timer < 0.5:
+        pg.draw.rect(screen, G.GREEN, (440, 350,boss_hp * 4 , 40))
+    elif timer >= 0.5 and timer <= 3:
+        if timer >= 2:
+            length = (timer - 2) * count * 10
+            pg.draw.rect(screen, G.GREEN, (440, 350,(boss_hp -  length) * 4 , 40))
+        else:
+            pg.draw.rect(screen, G.GREEN, (440, 350, boss_hp * 4 , 40))
+        for i in range(count):
+            image = pg.image.load('materials/hit.png') 
+            size = (100, 100)
+            image = pg.transform.scale(image, (size[0], size[1]))
+            screen.blit(image, (G.WIDTH//2 - size[0]//2, 120 + i * 20))
+    elif timer > 3 and timer < 4:
+        pg.draw.rect(screen, G.GREEN, (440, 350, (boss_hp - count * 10) * 4 , 40))
+    elif timer >= 4:
+        return False
+    return True 
+def draw_text(keys):
+    global timer
+    if True in keys:
+        return False
+    else:
+        text = now_played[now_scene][-2]
+        if timer * G.FPS < 3 * len(text) + text.count(' '):
+            count = int(timer * G.FPS // 3)
+            count += text[:count].count(' ')
+            text1 = text[:count]
+                   
+        else:
+            if timer > 3*len(text)/G.FPS + 3:
+                return False            
+            text1 = now_played[now_scene][-2]
+        timer += 1/G.FPS
+        font = pg.font.SysFont('arial', 30)
+        Text = font.render(text1, True, (255, 255, 255))     
+        screen.blit(Text, (400, 400))    
+        Text = font.render('...', True, (255, 255, 255))     
+        screen.blit(Text, (900, 540))              
+        return True
+def battle():
+    global timer, now_scene, now_spawn, attack, borders, ready, buttons, now_kick, now_button
+    objects[0].parameters = list(bord)   
+    timer = 0
+    now_scene += 1
+    if now_scene == len(now_played):
+        over(True)
+        return None
+    attack = False
+    now_spawn = 'cant'
+    now_kick = 0
+    now_button = None
+    ready = False
+    b1 = Button((G.WIDTH // 2, 300), 'rec', pg.K_RIGHT, (205, 32, 228))
+    b2 = Button((G.WIDTH // 2, 300), 'cir', pg.K_LEFT, (35, 199, 219))
+    b3 = Button((G.WIDTH // 2, 300), 'tri', pg.K_UP, (19, 187, 61))
+    b4 = Button((G.WIDTH // 2, 300), 'tri', pg.K_DOWN, (228, 235, 18))
+    b1.start_move((G.WIDTH - 300, 350), 1.5, ready_to_spawn)
+    b2.start_move((200, 450), 1.5, ready_to_spawn)
+    b3.start_move((200, 350), 1.5, ready_to_spawn)
+    b4.start_move((G.WIDTH - 300, 450), 1.5, ready_to_spawn)   
+    buttons = [b1, b2, b3, b4]
+
+
 def update(vel):
     player.move(vel)
     return vel
@@ -217,4 +426,97 @@ def create_random_coord():
     while count_y < bord[1] + 20 and count_y > bord[3] - 20:
         count_y = random.randint(100, G.HEIGHT - 400)
     return(count_x, count_y)
-        
+def ready_to_spawn(button):
+    global now_spawn,arrow_types, timer
+    if button.fig == 'rec':
+        arrow_types = [random.randint(1, 4) for x in range(now_played[now_scene][-1])]
+        now_spawn = 'can'
+        timer = 0
+def is_ready():
+    global timer, ready, can_spawn
+    timer += 1/G.FPS
+    if timer >= 1:
+        ready = True
+        can_spawn = True
+        timer = - 1/ G.FPS
+def over(p):
+    pass
+def start(number):
+    global player, health, now_played, now_scene, boss
+    borders = Object('rect', G.WHITE, list(bord))
+    objects.append(borders)
+    player = Player(640, 400, number, 100)
+    s = Label(G.name, (390 , 600 ), (255, 255, 255), 30, 'showcardgothic')
+    s1 = Label('HP', (610 , 600 ), (255, 255, 255), 30, 'showcardgothic')
+    s2 = Label('LV ' + str(G.level), (510 , 600 ), (255, 255, 255), 30, 'showcardgothic')
+    health = Health((680, 600), 'showcardgothic')
+    b1 = Button((G.WIDTH // 2, 300), 'rec', pg.K_RIGHT, (205, 32, 228))
+    b2 = Button((G.WIDTH // 2, 300), 'cir', pg.K_LEFT, (35, 199, 219))
+    b3 = Button((G.WIDTH // 2, 300), 'tri', pg.K_UP, (19, 187, 61))
+    b4 = Button((G.WIDTH // 2, 300), 'tri', pg.K_DOWN, (228, 235, 18))
+    buttons.append(b1)
+    buttons.append(b2)
+    buttons.append(b3)
+    buttons.append(b4)
+    b1.start_move((G.WIDTH - 300, 350), 1.5, ready_to_spawn)
+    b2.start_move((200, 450), 1.5, ready_to_spawn)
+    b3.start_move((200, 350), 1.5, ready_to_spawn)
+    b4.start_move((G.WIDTH - 300, 450), 1.5, ready_to_spawn)
+    objects.append(s)
+    objects.append(s1)
+    objects.append(s2)
+    in_bosses()
+    text, pos, siz, c_m = bosses[number-1][0]
+    boss = Boss(text, pos, siz, c_m)
+    now_played = bosses[number-1]
+    now_scene = 1   
+def get_scene(keys):
+    global attack, now_spawn, now_score, boss_hp
+    screen.fill(G.BLACK)
+    boss.draw()
+    for i in objects[1:]:
+        i.draw()
+    if attack:
+        boss.draw()
+        for i in buttons:
+            i.draw(keys)
+        if now_spawn == 'can':
+            if not draw_arrow():
+                now_spawn = 'press'
+                #now_score = 0
+                now_kick = 0
+                for i in buttons:
+                    i.can_press = True
+        elif now_spawn == 'press':
+            if not draw_timer():
+                damage_boss(now_score)
+        elif now_spawn == 'damage':
+            if not draw_damage(now_score):
+                boss_hp -= now_score * 10
+                now_score = 0
+                show_text()
+        elif now_spawn == 'text':
+            if not draw_text(keys):
+                battle()
+                
+    else:
+        objects[0].draw()
+        if not ready or can_spawn:
+            player.draw()
+        if not ready:
+            is_ready()
+    for i in attacks:
+        i.draw()
+        if i.is_collide(player.rect):
+            player.hit()
+        i.move()
+    health.draw()
+    if can_spawn:
+        spawn()
+    else:
+        if len(attacks) !=0:
+            player.draw()
+        else:
+            if not attack and ready:
+                attack = not animation.animate()
+    return(screen)
