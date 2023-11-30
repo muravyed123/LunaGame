@@ -9,7 +9,8 @@ active = True
  
 clock = pg.time.Clock()
 sc = pg.display.set_mode((G.WIDTH, G.HEIGHT))
-def exit():
+def exit_pr():
+    active = False
     sys.exit()
 menu.start()
 draw.change_scene(1)

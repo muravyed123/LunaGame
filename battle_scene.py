@@ -61,31 +61,60 @@ class Player:
         max_health = health
         self.ltime = 0.5
         self.c_timer = self.ltime
+        self.active = True
+        self.v_x = 1
     def move(self, vel):
-        self.x += self.v * vel[0]
-        self.y -= self.v * vel[1]
-        grans = [bord[0] + bord[-1], bord[0] + bord[2] - bord[-1] - self.rect.width, bord[1] + bord[-1], bord[1] + bord[3] - bord[-1] - self.rect.height]
-        if self.x >= grans[1]:
-            self.x = grans[1]
-        elif self.x <= grans[0]:
-            self.x = grans[0]
-        if self.y >= grans[3]:
-            self.y = grans[3]
-        elif self.y <= grans[2]:
-            self.y = grans[2]        
-        self.rect = pg.Rect(self.x, self.y, self.rect.width, self.rect.height)
-        if self.c_timer + 1/ G.FPS < self.ltime:
-            self.c_timer += 1/G.FPS
-        else:
-            self.c_timer = self.ltime
+        if self.active:
+            self.x += self.v * vel[0]
+            self.y -= self.v * vel[1]
+            grans = [bord[0] + bord[-1], bord[0] + bord[2] - bord[-1] - self.rect.width, bord[1] + bord[-1], bord[1] + bord[3] - bord[-1] - self.rect.height]
+            if self.x >= grans[1]:
+                self.x = grans[1]
+            elif self.x <= grans[0]:
+                self.x = grans[0]
+            if self.y >= grans[3]:
+                self.y = grans[3]
+            elif self.y <= grans[2]:
+                self.y = grans[2]        
+            self.rect = pg.Rect(self.x, self.y, self.rect.width, self.rect.height)
+            if self.c_timer + 1/ G.FPS < self.ltime:
+                self.c_timer += 1/G.FPS
+            else:
+                self.c_timer = self.ltime
     def draw(self):
         #pg.draw.rect(screen, G.GREEN, self.rect)
         screen.blit(self.image, self.rect)
-    def hit(self):
+    def hit(self,at):
+        global attacks
         if self.c_timer == self.ltime:
             self.health -= 10
             self.c_timer = 0
             health.hit(0.5)
+            if self.health <= 0 and self.health != -50:
+                self.v = -self.v * 2
+                self.c_timer = 0
+                self.v_x = random.randint(2,4) * (random.randint(0,1)- 0.5) * 2
+                attacks = [at]
+                self.health = -50
+                over(False)
+    def die(self):
+        #pg.draw.line(screen, G.RED, (self.x - 20, self.y + 10), (self.x + 46, self.y + 5), 5)
+        self.rect = pg.Rect(self.x, self.y, self.rect.width, self.rect.height)
+        screen.blit(self.image, self.rect)        
+        if self.c_timer <= 3:
+            pg.draw.line(screen, G.RED, (self.x - 18, self.y + 15), (self.x + 46, self.y + 7), 5)
+        elif self.c_timer > 3 and self.c_timer <= 5:
+            self.y += self.v
+            if self.v <= 0:
+                self.v += 0.2
+            else:
+                self.v += 0.4
+            self.x += self.v_x
+        elif self.c_timer > 5 and self.c_timer< 6:
+            self.c_timer = 7
+            from draw import lose
+            lose()
+        self.c_timer += 1/G.FPS
 class Object():
     def __init__(self, fig, color, parameters,x = 0, y = 0):
         self.fig = fig
@@ -458,8 +487,16 @@ def is_ready():
         can_spawn = True
         timer = - 1/ G.FPS
 def over(p):
-    from draw import change_scene as change
-    change(last)
+    global now_spawn, attack, can_spawn
+    if p:
+        from draw import change_scene as change
+        change(last)
+    else:
+        attack = True
+        now_spawn = 'dead'
+        player.active = False
+        can_spawn = False
+        player.c_timer = 0
 def die1():
     size = (200, 200)
     image = pg.image.load('materials/tapok.png') 
@@ -490,7 +527,7 @@ def start(number, last_scene):
     new_perem()
     borders = Object('rect', G.WHITE, list(bord))
     objects.append(borders)
-    player = Player(640, 400, number, 100)
+    player = Player(640, 400, number, 10)
     s = Label(G.name, (390 , 600 ), (255, 255, 255), 30, 'showcardgothic')
     s1 = Label('HP', (610 , 600 ), (255, 255, 255), 30, 'showcardgothic')
     s2 = Label('LV ' + str(G.level), (510 , 600 ), (255, 255, 255), 30, 'showcardgothic')
@@ -520,13 +557,16 @@ def start(number, last_scene):
 def get_scene(keys):
     global attack, now_spawn, now_score, boss_hp
     screen.fill(G.BLACK)
-    boss.draw()
-    for i in objects[1:]:
-        i.draw()
-    if attack:
+    if now_spawn!='dead':
         boss.draw()
-        for i in buttons:
-            i.draw(keys)
+        health.draw()
+        for i in objects[1:]:
+            i.draw()
+    if attack:
+        if now_spawn != 'dead':
+            boss.draw()
+            for i in buttons:
+                i.draw(keys)
         if now_spawn == 'can':
             if not draw_arrow():
                 now_spawn = 'press'
@@ -552,7 +592,8 @@ def get_scene(keys):
         elif now_spawn == 'die':
             draw_damage(now_score)
             die()
-        
+        elif now_spawn == 'dead':
+            player.die()
                 
     else:
         objects[0].draw()
@@ -563,14 +604,14 @@ def get_scene(keys):
     for i in attacks:
         i.draw()
         if i.is_collide(player.rect):
-            player.hit()
+            player.hit(i)
         i.move()
-    health.draw()
     if can_spawn:
         spawn()
     else:
         if len(attacks) !=0:
-            player.draw()
+            if now_spawn != 'dead':
+                player.draw()
         else:
             if not attack and ready:
                 attack = not animation.animate()

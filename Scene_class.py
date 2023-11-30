@@ -21,14 +21,14 @@ class CollisionShape():
 class Object():
     def __init__(self, fig, color, parameters,x = 0, y = 0):
         self.fig = fig
-        self.x = x
-        self.y = y
+        self.x = parameters[0]
+        self.y = parameters[1]
         self.color = color
         self.parameters = parameters
     def draw(self):
         if self.fig == 'rect':
-            x, y, w, h, r = self.parameters
-            pg.draw.rect(screen, self.color, (x, y, w, h), r)
+            a, b, w, h, r = self.parameters
+            pg.draw.rect(screen, self.color, (self.x, self.y, w, h), r)
         elif fig == 'çircle':
             pg.draw.circle(screen, self.color, self.parameters)
         elif fig == 'polygon':
@@ -67,6 +67,8 @@ class PlayLabel():
         self.font = pg.font.SysFont("Arial", font)
         self.color = color
         self.text = text
+        Text = self.font.render(text, 1, pg.Color("White"))
+        self.size = Text.get_size()
     def draw(self):
         text = self.font.render(self.text, True, self.color)        
         screen.blit(text, (self.x, self.y))    
@@ -192,4 +194,16 @@ def give_list_an(file_name):
 def go_in_btl(obj = None, scene = None, number = None):
     from draw import go_in_battle as battle
     battle(number)
-    
+def flip_all(obj, ar, col, length):
+    for i in obj:
+        if type(i) == Sprite or type(i) == AnimatedSprite:
+            i.rect.x = length - i.x - i.rect.width
+        elif type(i) == PlayLabel:
+            i.x = length - i.x - i.size[0]
+        elif type(i) == Object and i.fig == 'rect':
+            i.x = length - i.x - i.parameters[2]
+    for i in ar:
+        i.rect.x = length - i.x  - i.rect.width
+    for i in col:
+        i.rect.x = length - i.x  - i.rect.width
+    return(obj, ar, col)
