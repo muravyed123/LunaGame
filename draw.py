@@ -5,12 +5,17 @@ import globalsc as G
 import Scene_class as Sc
 
 import battle_scene as Bscene
-screen = pg.Surface((1280, 720), G.WHITE) 
+screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE) 
 now_scene = None
 
 last_scene = 1
 in_battle = False
 ex = None
+player_active = True
+timer = 0
+now_do = 'nothing'
+scene_number = 0
+flip = False
 
 
 class Camera:
@@ -120,13 +125,16 @@ class Scene:
         self.player = player
         self.camera = camera
         self.me = importlib.import_module(f'scenes.scene{number}')
+        self.me.clear()
         self.me.start()
         
     def draw(self, vel, keys):
         surface = self.me.get_scene(keys)
         #pl.move(vel)
-        screen.blit(surface, (-self.camera.x + camera.width//2, self.camera.y))
-        pl =  Player(screen, player.x, player.y, player.v_y, {}, False)
+        position = [-self.camera.x + camera.width//2, self.camera.y]
+        length = 0
+        screen.blit(surface, tuple(position))
+        pl =  Player(screen, player.x , player.y, player.v_y, {}, False)
         return self.me.update(player, pl, vel)
 class BattleScene:
     def __init__(self, number):
@@ -141,11 +149,29 @@ class BattleScene:
         return (0, 0)   
 
 def change_scene(number):
-    global now_scene, in_battle, ex
+    global timer, now_do, player_active, scene_number
+    scene_number = number
+    timer = 0
+    if now_scene != None:
+        now_do = 'animation'
+        player_active = False
+        timer = 0
+        player.animation = 'stay'
+    else:
+        change_scene_final(number)
+def change_scene_final(number):
+    global now_scene, in_battle, ex, now_do, player_active, scene_number, flip
     from main import exit_pr
     ex = exit_pr
     now_scene = Scene(number, player, camera)
     in_battle = False
+    player.is_on_floor = False
+    if flip:
+        flip = False
+        player.x = now_scene.me.length - player.x - player.rect.width 
+        player.flip_h = not player.flip_h
+    scene_number = 0
+
 
 def go_in_battle(number):
     global now_scene, last_scene, in_battle
@@ -156,13 +182,26 @@ def go_in_battle(number):
 
 def lose():
     ex()
+def animate_black():
+    global timer, player_active, now_do
+    timer += 1/ G.FPS
+    if timer >= 4:
+        now_do = 'nothing'
+        player_active = True
+    else:
+        if timer >= 2 and scene_number != 0:
+            change_scene_final(scene_number)
+        surface = pg.Surface((G.WIDTH, G.HEIGHT), 0x000000FF)
+        surface.set_alpha(255 * (2 - abs(timer - 2))//2)
+        screen.blit(surface,(0,0))
 camera = Camera(True)
 animations = {'walk' : [Sc.give_list_an('Animations/wh_cat_walk'), 5], 
                      'jump' : [Sc.give_list_an('Animations/wh_cat_jump'), 8], 
                      'stay' : [Sc.give_list_an('Animations/wh_cat_stay'), 10] }
 player = Player(screen, 100, 200, 0, animations)
 def update(event, keys):
-    screen.fill(G.WHITE)
+    global flip
+    screen.fill((255, 255, 255))
     vel = [0,0]
     if keys[pg.K_LEFT]:
         vel[0] = -1
@@ -174,10 +213,22 @@ def update(event, keys):
         vel[1] = 0 
         if in_battle:
             vel[1] = -1
-    vel = now_scene.draw(vel, keys)
+    if player_active:
+        vel = now_scene.draw(vel, keys)
+    else:
+        vel = now_scene.draw(vel, [False] * 512)
     if not in_battle:
         player.draw()
-        player.move(vel)
+        if player_active:
+            player.move(vel)
+            if keys[pg.K_q]:
+                if now_scene.me.flip_scene != None:
+                    change_scene(now_scene.me.flip_scene) 
+                    flip = True
+        else:
+            if now_do == 'animation':
+                player.move([0,0])
+                animate_black()
         camera.move(player)
 
     return(screen)

@@ -11,7 +11,8 @@ areas = []
 textures = []
 
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
-
+def clear():
+    pass
 def start():    
     colis1 = Sc.CollisionShape(700, 300, (80, 60))
     collisions.append(colis1)

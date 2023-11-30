@@ -9,11 +9,19 @@ collisions = []
 objects = []
 areas = []
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
+flip_scene = 3
+flip = False
+length = 1100
 
 textures = ['materials\Luna.jpg', 'materials\door.jpg', 'materials\wall1.jpg']
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
+def clear():
+    global collisions, objects, areas
+    collisions = []
+    objects =[]
+    areas = []
 def start():
-    global collisions
+    global collisions, objects, areas
     colis1 = Sc.CollisionShape(0, 0, (20, 460))
     colis2 = Sc.CollisionShape(1000, 0, (20, 460))
     colis3 = Sc.CollisionShape(300, 250, (60, 60))
@@ -23,7 +31,7 @@ def start():
     spr3 = Sc.Sprite(textures[1], (300, 200), (100, 250))
     wall = Sc.Sprite(textures[2], (20, 0), (980, 450))
     
-    objects.append(wall)
+    #objects.append(wall)
     objects.append(spr2)
     objects.append(spr3)
     
@@ -51,6 +59,8 @@ def start():
     ar2 = Sc.Area(500, 400, (60, 60), Sc.create_checktext, ('press [E] to change scene', (400, 300), G.BLACK, 30, pg.K_e, Sc.change_scene, None), Sc.delete_obj)
     areas.append(ar1)
     areas.append(ar2)
+    if flip:
+        objects, areas, collisions = Sc.flip_all(objects, areas, collisions, length)
 def get_scene(keys):
     screen = Sc.screen
     screen.fill(G.WHITE)
