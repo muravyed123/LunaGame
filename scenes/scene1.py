@@ -12,20 +12,16 @@ screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
 
 textures = ['materials\Luna.jpg', 'materials\door.jpg', 'materials\wall1.jpg']
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
+
+text = Sc.separate('dialogues\dialogue0.txt')
+phrases = []
+
 def start():
     global collisions
     colis1 = Sc.CollisionShape(0, 0, (20, 460))
     colis2 = Sc.CollisionShape(1000, 0, (20, 460))
     colis3 = Sc.CollisionShape(300, 250, (60, 60))
     colis4 = Sc.CollisionShape(500, 60, (80, 60))
-    
-    spr2 = Sc.Sprite(textures[1], (700, 200), (100, 250))
-    spr3 = Sc.Sprite(textures[1], (300, 200), (100, 250))
-    wall = Sc.Sprite(textures[2], (20, 0), (980, 450))
-    
-    objects.append(wall)
-    objects.append(spr2)
-    objects.append(spr3)
     
     collisions.append(colis1)
     collisions.append(colis2)
@@ -37,13 +33,20 @@ def start():
     lab2 = Sc.PlayLabel('you can go here ->', (200, 10), G.BLACK, 30)
     lab3 = Sc.PlayLabel('OMG Luna', (790, 200), G.BLACK, 30)
     spr1 = Sc.Sprite(textures[0], (800, 350), (100,100))
+    spr2 = Sc.Sprite(textures[1], (700, 200), (100, 250))
+    spr3 = Sc.Sprite(textures[1], (300, 200), (100, 250))
+    wall = Sc.Sprite(textures[2], (20, 0), (980, 450))
     anspr1 = Sc.AnimatedSprite(Sc.give_list_an(animations[0]), 4, False, (700, 385), (140,70))
     anspr2 = Sc.AnimatedSprite(Sc.give_list_an(animations[1]), 4, True, (600, 385), (140,70))
+    
     objects.append(obj1)
     objects.append(lab1)
     objects.append(lab2)
     objects.append(lab3)
-    objects.append(spr1)
+    objects.append(spr1)    
+    objects.append(spr2)
+    objects.append(spr3)
+    objects.append(wall)
     objects.append(anspr1)
     objects.append(anspr2)
     
@@ -51,6 +54,10 @@ def start():
     ar2 = Sc.Area(500, 400, (60, 60), Sc.create_checktext, ('press [E] to change scene', (400, 300), G.BLACK, 30, pg.K_e, Sc.change_scene, None), Sc.delete_obj)
     areas.append(ar1)
     areas.append(ar2)
+    
+    txt = Sc.Dialogue(screen, text, 'Luna', 'Kitty')
+    phrases.append(txt)
+    
 def get_scene(keys):
     screen = Sc.screen
     screen.fill(G.WHITE)
@@ -62,11 +69,15 @@ def get_scene(keys):
             i.click(keys)
     for i in areas:
         i.draw()
+    for i in range(len(phrases)):
+        phrases[i].draw()
     return(screen)
 def update(player, pl, vel):
     pl.is_on_floor = player.is_on_floor
     r1, r2 = pl.move_x(vel[0]), pl.move((-vel[0], vel[1]))
     r3 = pl.move((vel[0] ,0))
+    for i in range(len(phrases)):
+        phrases[i].move()
     for i in collisions:
         if i.is_collide(r1): 
             vel[0] = 0

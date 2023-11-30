@@ -80,6 +80,7 @@ class Background:
     def show(self):
         screen.blit(self.bg, (0, 0))
 def start():
+    #Add function "Enter your name"
     but = Button("Start", (600, 400), 30, "navy", screen)
     but.command = but.exit
     #buttons.append(but)

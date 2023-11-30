@@ -123,7 +123,7 @@ class AnimatedSprite():
                 self.image, (self.size[0], self.size[1]))   
             screen.blit(self.image, self.rect)       
 class Dialogue():
-    def __init__(self):
+    def __init__(self, screen, text, person, name):
         self.r = 10
         self.x = 100
         self.y = 100
@@ -131,21 +131,28 @@ class Dialogue():
         self.r = 5
         self.tx = 300
         self.ty = 100
-        self.v = 30
+        self.v = 1
+        #self.text = text
+        self.font = pg.font.SysFont("Arial", 30)
+        self.text = [[text[i] for i in range(0, len(text) - 1, 2)], [text[i] for i in range(1, len(text) - 1, 2)]]
+        self.label = [person, name]
+        self.screen = screen
+        
     def draw(self):
         rect = pg.Rect(self.x, self.y, 300, 300)
         pg.draw.rect(self.screen, self.color, rect, border_radius = self.r)
-    def interior(self):
-        file = open('dialogues\dialogue0.txt', 'r')
-        text = list(map(lambda x: x.rstrip("\\"), file.readlines()))
-        for i in range(len(text)):
-            if i % 2 == 0:
-                lab1 = Sc.PlayLabel(text[i], (self.tx, self.ty), G.WHITE, 30)
-                objects.append(lab1)
-            else:                
-                lab2 = Sc.PlayLabel(text[i], (self.tx, self.ty), G.WHITE, 30)
-                objects.append(lab2)
-            self.ty += self.v
+        for i in range(2):
+            for j in range(len(self.text[i])):
+                text = self.font.render(self.label[i][j] + ": " + self.text[i][j], True, self.color)
+                text_rect = text.get_rect()
+                text_rect.centerx = G.WIDTH // 2
+                text_rect.bottom = G.HEIGHT - 50
+                screen.blit(text, text_rect)
+            
+        
+    def move(self):                                                                                                                                                                                       
+        self.ty -= 1
+
 class KinematicBody():
     def __init__(self, obj, typ, parameters):
         self.obj = obj
@@ -173,6 +180,11 @@ def create_checktext(obj, scene, param):
     cht_n.command = command
     obj.info = len(scene)
     scene.append(cht_n)
+    
+def separate(file):
+    file_text = open(file, 'r')
+    phrase = file_text.read().split('@')
+    return [phrase.strip() for phrase in file_text if phrase.strip()]
 
 def give_list_an(file_name):
     anim = [file_name + '/' + str(x) + '.png' for x in range(1, G.howmanyFiles(file_name) + 1)]
