@@ -9,11 +9,11 @@ active = True
  
 clock = pg.time.Clock()
 sc = pg.display.set_mode((G.WIDTH, G.HEIGHT))
-def exit():
+def exit_pr():
+    active = False
     sys.exit()
 menu.start()
-#draw.change_scene(1)
-draw.go_in_battle(1)
+draw.change_scene(1)
 pg.display.set_caption('Game')
 while active:
     clock.tick(G.FPS)

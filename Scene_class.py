@@ -157,7 +157,7 @@ class KinematicBody():
             self.obj.rect.y += self.p['speed'][1]
         
 def change_scene(obj = None, scene = None, param = None):
-    number = 1
+    number = 2
     from draw import change_scene as change
     change(number)
 def create_label(obj, scene, param):
