@@ -2,6 +2,48 @@ import pygame as pg
 import globalsc as G
 
 screen = pg.Surface((G.WIDTH * 2, G.HEIGHT), G.WHITE)
+change_screen = pg.Surface((G.WIDTH * 2, G.HEIGHT), G.WHITE)
+""""global collisions, objects, areas
+    colis1 = Sc.CollisionShape(0, 0, (20, 460))
+    colis2 = Sc.CollisionShape(1000, 0, (20, 460))
+    colis3 = Sc.CollisionShape(300, 250, (60, 60))
+    colis4 = Sc.CollisionShape(500, 60, (80, 60))
+    
+    spr2 = Sc.Sprite(textures[1], (700, 200), (100, 250))
+    spr3 = Sc.Sprite(textures[1], (300, 200), (100, 250))
+    wall = Sc.Sprite(textures[2], (20, 0), (980, 450))
+    
+    #objects.append(wall)
+    objects.append(spr2)
+    objects.append(spr3)
+    
+    collisions.append(colis1)
+    collisions.append(colis2)
+    collisions.append(colis3)
+    collisions.append(colis4)
+    
+    obj1 = Sc.Figure('rect', G.BLACK, (500, 60, 80, 60, 30))
+    lab1 = Sc.PlayLabel('you can escape ->', (200, 400), G.BLACK, 30)
+    lab2 = Sc.PlayLabel('you can go here ->', (200, 10), G.BLACK, 30)
+    lab3 = Sc.PlayLabel('OMG Luna', (790, 200), G.BLACK, 30)
+    spr1 = Sc.Sprite(textures[0], (800, 350), (100,100))
+    anspr1 = Sc.AnimatedSprite(Sc.give_list_an(animations[0]), 4, False, (700, 385), (140,70))
+    anspr2 = Sc.AnimatedSprite(Sc.give_list_an(animations[1]), 4, True, (600, 385), (140,70))
+    objects.append(obj1)
+    objects.append(lab1)
+    objects.append(lab2)
+    objects.append(lab3)
+    objects.append(spr1)
+    objects.append(anspr1)
+    objects.append(anspr2)
+    
+    ar1 = Sc.Area(800, 400, (40, 60), Sc.go_in_btl, (1))
+    ar2 = Sc.Area(500, 400, (60, 60), Sc.create_checktext, ('press [E] to change scene', (400, 300), G.BLACK, 30, pg.K_e, Sc.change_scene, None), Sc.delete_obj)
+    areas.append(ar1)
+    areas.append(ar2)
+    if flip:
+        objects, areas, collisions = Sc.flip_all(objects, areas, collisions, length)
+    """
 class CollisionShape():
     def __init__(self, x , y, size):
         self.x = x
@@ -18,7 +60,7 @@ class CollisionShape():
     def draw(self):
         pg.draw.rect(screen, G.BLUE, self.rect)    
         return(screen)
-class Object():
+class Figure():
     def __init__(self, fig, color, parameters,x = 0, y = 0):
         self.fig = fig
         self.x = parameters[0]
@@ -29,9 +71,9 @@ class Object():
         if self.fig == 'rect':
             a, b, w, h, r = self.parameters
             pg.draw.rect(screen, self.color, (self.x, self.y, w, h), r)
-        elif fig == 'çircle':
+        elif self.fig == 'circle':
             pg.draw.circle(screen, self.color, self.parameters)
-        elif fig == 'polygon':
+        elif self.fig == 'polygon':
             pg.draw.polygon(screen, self.color, self.parameters)
 class Area():
     def __init__(self, x , y, size, signal, p1 = None, signal_ex = None, p2 = None):
@@ -71,7 +113,7 @@ class PlayLabel():
         self.size = Text.get_size()
     def draw(self):
         text = self.font.render(self.text, True, self.color)        
-        screen.blit(text, (self.x, self.y))    
+        change_screen.blit(text, (self.x, self.y))
 class CheckText(PlayLabel):
     def __init__(self, text,  pos, color, font, key, command, param):
         self.x, self.y = pos
@@ -84,8 +126,9 @@ class CheckText(PlayLabel):
     def click(self, keys):
         if keys[self.key]:
             self.command(self.param)  
-class Sprite():
+class Sprite(pg.sprite.DirtySprite):
     def __init__(self, texture, pos, size = None):
+        pg.sprite.Sprite.__init__(self)
         self.image = pg.image.load(texture)
         self.x = pos[0]
         self.y = pos[1]
@@ -97,6 +140,7 @@ class Sprite():
             self.image, (self.size[0], self.size[1]))        
     def draw(self):
         screen.blit(self.image, self.rect)
+        pass
 class AnimatedSprite():
     def __init__(self, images, speed, stop, pos, size = None):
         self.images = images
@@ -118,14 +162,14 @@ class AnimatedSprite():
             self.n += 1
             if self.n == len(self.images) * self.speed and not self.stop:
                 self.n = 0
-            screen.blit(self.image, self.rect)    
+            change_screen.blit(self.image, self.rect)
         else:
             self.image = pg.image.load(self.images[-1])
             self.image = pg.transform.scale(
                 self.image, (self.size[0], self.size[1]))   
-            screen.blit(self.image, self.rect)       
+            change_screen.blit(self.image, self.rect)
 class Dialogue():
-    def __init__(self, screen, text, person, name):
+    def __init__(self):
         self.r = 10
         self.x = 100
         self.y = 100
@@ -133,28 +177,21 @@ class Dialogue():
         self.r = 5
         self.tx = 300
         self.ty = 100
-        self.v = 1
-        #self.text = text
-        self.font = pg.font.SysFont("Arial", 30)
-        self.text = [[text[i] for i in range(0, len(text) - 1, 2)], [text[i] for i in range(1, len(text) - 1, 2)]]
-        self.label = [person, name]
-        self.screen = screen
-        
+        self.v = 30
     def draw(self):
         rect = pg.Rect(self.x, self.y, 300, 300)
         pg.draw.rect(self.screen, self.color, rect, border_radius = self.r)
-        for i in range(2):
-            for j in range(len(self.text[i])):
-                text = self.font.render(self.label[i][j] + ": " + self.text[i][j], True, self.color)
-                text_rect = text.get_rect()
-                text_rect.centerx = G.WIDTH // 2
-                text_rect.bottom = G.HEIGHT - 50
-                screen.blit(text, text_rect)
-            
-        
-    def move(self):                                                                                                                                                                                       
-        self.ty -= 1
-
+    def interior(self):
+        file = open('dialogues\dialogue0.txt', 'r')
+        text = list(map(lambda x: x.rstrip("\\"), file.readlines()))
+        for i in range(len(text)):
+            if i % 2 == 0:
+                lab1 = Sc.PlayLabel(text[i], (self.tx, self.ty), G.WHITE, 30)
+                objects.append(lab1)
+            else:                
+                lab2 = Sc.PlayLabel(text[i], (self.tx, self.ty), G.WHITE, 30)
+                objects.append(lab2)
+            self.ty += self.v
 class KinematicBody():
     def __init__(self, obj, typ, parameters):
         self.obj = obj
@@ -182,11 +219,6 @@ def create_checktext(obj, scene, param):
     cht_n.command = command
     obj.info = len(scene)
     scene.append(cht_n)
-    
-def separate(file):
-    file_text = open(file, 'r')
-    phrase = file_text.read().split('@')
-    return [phrase.strip() for phrase in file_text if phrase.strip()]
 
 def give_list_an(file_name):
     anim = [file_name + '/' + str(x) + '.png' for x in range(1, G.howmanyFiles(file_name) + 1)]
@@ -194,16 +226,22 @@ def give_list_an(file_name):
 def go_in_btl(obj = None, scene = None, number = None):
     from draw import go_in_battle as battle
     battle(number)
-def flip_all(obj, ar, col, length):
+def flip_all(obj, ar, col, sprites, length):
     for i in obj:
-        if type(i) == Sprite or type(i) == AnimatedSprite:
-            i.rect.x = length - i.x - i.rect.width
-        elif type(i) == PlayLabel:
+        if type(i) == PlayLabel:
             i.x = length - i.x - i.size[0]
-        elif type(i) == Object and i.fig == 'rect':
-            i.x = length - i.x - i.parameters[2]
+        elif type(i) == Figure :
+            if i.fig == 'rect':
+                i.x = length - i.x - i.parameters[2]
+            elif i.fig == 'polygon':
+                new_param = []
+                for j in range(len(i.parameters)):
+                    new_param.append((length -i.parameters[j][0],  i.parameters[j][1]))
+                i.parameters = tuple(new_param)
     for i in ar:
         i.rect.x = length - i.x  - i.rect.width
     for i in col:
         i.rect.x = length - i.x  - i.rect.width
-    return(obj, ar, col)
+    for i in sprites:
+        i.rect.x = length - i.x - i.rect.width
+    return(obj, ar, col, sprites)

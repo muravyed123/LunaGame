@@ -10,68 +10,45 @@ objects = []
 areas = []
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
 flip_scene = 1
+sprites = []
+sprite_group = pg.sprite.Group()
 flip = True
-length = 1100
+length = 3000
+start_position = (500,680)
 
-textures = ['materials\Luna.jpg', 'materials\door.jpg', 'materials\wall1.jpg']
+textures = []
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
+start_position = (1500,680)
 def clear():
     global collisions, objects, areas
     collisions = []
     objects =[]
     areas = []
+    draw_only
 def start():
-    global collisions, objects, areas
-    colis1 = Sc.CollisionShape(0, 0, (20, 460))
-    colis2 = Sc.CollisionShape(1000, 0, (20, 460))
-    colis3 = Sc.CollisionShape(300, 250, (60, 60))
-    colis4 = Sc.CollisionShape(500, 60, (80, 60))
-    
-    spr2 = Sc.Sprite(textures[1], (700, 200), (100, 250))
-    spr3 = Sc.Sprite(textures[1], (300, 200), (100, 250))
-    wall = Sc.Sprite(textures[2], (20, 0), (980, 450))
-    
-    #objects.append(wall)
-    objects.append(spr2)
-    objects.append(spr3)
-    
-    collisions.append(colis1)
-    collisions.append(colis2)
-    collisions.append(colis3)
-    collisions.append(colis4)
-    
-    obj1 = Sc.Object('rect', G.BLACK, (500, 60, 80, 60, 30))
-    lab1 = Sc.PlayLabel('you can escape ->', (200, 400), G.BLACK, 30)
-    lab2 = Sc.PlayLabel('you can go here ->', (200, 10), G.BLACK, 30)
-    lab3 = Sc.PlayLabel('OMG Luna', (790, 200), G.BLACK, 30)
-    spr1 = Sc.Sprite(textures[0], (800, 350), (100,100))
-    anspr1 = Sc.AnimatedSprite(Sc.give_list_an(animations[0]), 4, False, (700, 385), (140,70))
-    anspr2 = Sc.AnimatedSprite(Sc.give_list_an(animations[1]), 4, True, (600, 385), (140,70))
-    objects.append(obj1)
-    objects.append(lab1)
-    objects.append(lab2)
-    objects.append(lab3)
-    objects.append(spr1)
-    objects.append(anspr1)
-    objects.append(anspr2)
-    
-    ar1 = Sc.Area(800, 400, (40, 60), Sc.go_in_btl, (1))
-    ar2 = Sc.Area(500, 400, (60, 60), Sc.create_checktext, ('press [E] to change scene', (400, 300), G.BLACK, 30, pg.K_e, Sc.change_scene, None), Sc.delete_obj)
-    areas.append(ar1)
-    areas.append(ar2)
-    if flip:
-        objects, areas, collisions = Sc.flip_all(objects, areas, collisions, length)
-def get_scene(keys):
-    screen = Sc.screen
-    screen.fill(G.WHITE)
-    for i in collisions:
-        i.draw()
+    wall = Sc.Figure('rect', (156, 224, 161), (0, 0, 3000, 400, 350))
+    objects.append(wall)
+    draw_only()
+
+def draw_only():
+    Sc.screen.fill((255,255,255))
     for i in objects:
         i.draw()
+    sprite_group.draw(Sc.screen)
+def get_scene(keys):
+    screen = Sc.screen
+    change_screen = Sc.change_screen
+    change_screen.fill(G.WHITE)
+    screen.blit(change_screen, (0,0))
+    for i in objects:
+        #i.draw()
         if type(i) == Sc.CheckText:
             i.click(keys)
+    for i in collisions:
+        i.draw()
     for i in areas:
         i.draw()
+    #sprite_group.draw(Sc.screen)
     return(screen)
 def update(player, pl, vel):
     pl.is_on_floor = player.is_on_floor
