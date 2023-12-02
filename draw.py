@@ -15,6 +15,7 @@ player_active = True
 timer = 0
 now_do = 'nothing'
 scene_number = 0
+scene_way = 2
 flip = False
 
 
@@ -42,7 +43,7 @@ class Player:
         self.v = 6
         self.v_y = v_y
         self.rect = pg.Rect(self.x , self.y, 100, 100)
-        self.jump = -16
+        self.jump = -17
         self.gravity = 0.5
         self.screen = screen
         self.is_on_floor = False
@@ -154,8 +155,8 @@ class BattleScene:
         screen.blit(surface, (0, 0))
         return (0, 0)   
 
-def change_scene(number):
-    global timer, now_do, player_active, scene_number, in_battle, now_scene
+def change_scene(number, way):
+    global timer, now_do, player_active, scene_number, in_battle, now_scene, scene_way
     scene_number = number
     timer = 0
     if now_scene != None:
@@ -163,6 +164,7 @@ def change_scene(number):
         player_active = False
         in_battle = False
         timer = 0
+        scene_way = way
         player.animation = 'stay'
     else:
         change_scene_final(number)
@@ -174,11 +176,11 @@ def change_scene_final(number):
     player.is_on_floor = False
     if flip:
         flip = False
-        player.x = now_scene.me.length - player.x - player.rect.width 
+        player.x = now_scene.me.length - player.x- player.rect.width
         camera.x = now_scene.me.length - camera.x + G.WIDTH//2
         player.flip_h = not player.flip_h
     else:
-        player.x, player.y = now_scene.me.start_position
+        player.x, player.y = now_scene.me.start_position[scene_way]
     scene_number = 0
 
 
@@ -240,7 +242,7 @@ def update(event, keys):
             player.move(vel)
             if keys[pg.K_q]:
                 if now_scene.me.flip_scene != None:
-                    change_scene(now_scene.me.flip_scene) 
+                    change_scene(now_scene.me.flip_scene, 0)
                     flip = True
         else:
             if now_do == 'animation':

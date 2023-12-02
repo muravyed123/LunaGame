@@ -49,8 +49,12 @@ class CollisionShape():
         self.x = x
         self.y = y
         self.rect = pg.Rect((x, y, size[0], size[1]))
+        self.size = size
     def is_collide(self, rec):
         return(self.rect.colliderect(rec))
+    def change_size(self, size):
+        self.size = tuple(size)
+        self.rect = pg.Rect((self.x, self.y, size[0], size[1]))
     def push_on(self, rec, vel):
         y1, y2 = self.y - rec.height, self.y + self.rect.height
         if vel > 0 :
@@ -79,6 +83,7 @@ class Area():
     def __init__(self, x , y, size, signal, p1 = None, signal_ex = None, p2 = None):
         self.x = x
         self.y = y
+        self.size = tuple(size)
         self.rect = pg.Rect((x, y, size[0], size[1]))
         self.signal = signal
         self.signal_ex = signal_ex
@@ -101,6 +106,9 @@ class Area():
                 self.is_collid = False  
                 return((t, self.signal_ex, self.p2))
             else: return((t, None, None))
+    def change_size(self, size):
+        self.size = tuple(size)
+        self.rect = pg.Rect((self.x, self.y, self.size[0], self.size[1]))
     def draw(self):
         pg.draw.rect(screen, G.GREEN, self.rect)    
 class PlayLabel():
@@ -129,6 +137,7 @@ class CheckText(PlayLabel):
 class Sprite(pg.sprite.DirtySprite):
     def __init__(self, texture, pos, size = None):
         pg.sprite.Sprite.__init__(self)
+        self.texture = texture
         self.image = pg.image.load(texture)
         self.x = pos[0]
         self.y = pos[1]
@@ -141,6 +150,13 @@ class Sprite(pg.sprite.DirtySprite):
     def draw(self):
         screen.blit(self.image, self.rect)
         pass
+    def change_size(self, size):
+        self.size = tuple(size)
+        self.image = pg.image.load(self.texture)
+        self.image = pg.transform.scale(
+            self.image, (self.size[0], self.size[1]))
+        self.rect = pg.Rect(self.x, self.y, size[0], size[1])
+        pg.sprite.Sprite.__init__(self)
 class AnimatedSprite():
     def __init__(self, images, speed, stop, pos, size = None):
         self.images = images
@@ -203,9 +219,9 @@ class KinematicBody():
             self.obj.rect.y += self.p['speed'][1]
         
 def change_scene(obj = None, scene = None, param = None):
-    number = 2
+    number, way = param
     from draw import change_scene as change
-    change(number)
+    change(number, way)
 def create_label(obj, scene, param):
     text, pos, color, font = param
     lab_n = PlayLabel(text, pos, color, font)
@@ -239,9 +255,13 @@ def flip_all(obj, ar, col, sprites, length):
                     new_param.append((length -i.parameters[j][0],  i.parameters[j][1]))
                 i.parameters = tuple(new_param)
     for i in ar:
-        i.rect.x = length - i.x  - i.rect.width
+        i.x = length - i.x  - i.rect.width
+        i.change_size(i.size)
     for i in col:
-        i.rect.x = length - i.x  - i.rect.width
-    for i in sprites:
-        i.rect.x = length - i.x - i.rect.width
+        i.x = length - i.x  - i.rect.width
+        i.change_size(i.size)
+    for i in sprites.values():
+        i.x = length - i.x - i.rect.width
+        i.change_size(i.size)
+        i.change_size(i.size)
     return(obj, ar, col, sprites)

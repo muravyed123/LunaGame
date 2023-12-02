@@ -8,30 +8,37 @@ import Scene_class as Sc
 collisions = []
 objects = []
 areas = []
-sprites = []
+sprites = {}
+keys = []
 sprite_group = pg.sprite.Group()
 
 flip_scene = 1
 flip = True
 length = 3000
-start_position = (2500,680)
-textures = ["materials\kfloor.png", 'materials\ktable.png', 'materials\sofa.png', 'materials\kbox.png',
-            'materials\karmchair.png', 'materials\window.png', 'materials\door1.png']
+start_position = [(100,680), (length -200, 680)]
+textures = ["materials/floor.png", 'materials/table.png', 'materials/sofa.png', 'materials/box.png',
+            'materials/armchair.png', 'materials/window.png', 'materials/door1.png', 'materials/flower.png',
+            'materials/flower2.png', 'materials/tree.png', 'materials/turnstile.png', 'materials/exit.png',
+            'materials/board_pl.png', 'materials/plakat3.png', 'materials/mirror.png']
 
 def clear():
-    global collisions, objects, areas
+    global collisions, objects, areas, sprites, keys
     collisions = []
     objects =[]
     areas = []
+    sprites = {}
+    keys = []
     draw_only()
 def start():
-    wall = Sc.Figure('rect', (156, 224, 180), (0, 0, 3000, 525, 300))
+    global keys
+    wall = Sc.Figure('rect', (156, 224, 180), (0, 0, 3000, 600, 300))
     wall2 = Sc.Figure('rect', (156, 224, 161), (0, 0, 200, 700, 140))
     wall3 = Sc.Figure('rect', G.BLACK, (0, -5, 200, 710, 5))
-    wall4 = Sc.Figure('rect', (156, 224, 161), (1400, 0, 500, 700, 260))
-    wall5 = Sc.Figure('rect', G.BLACK, (1400, -5, 500, 710, 5))
-    wall6 = Sc.Figure('polygon', (136, 224, 161), ((1300, 520), (1400, 700), (1400, 0 ), (1300, 0)))
-    table2 = Sc.Sprite(textures[1], (2300, 209), (700, 600))
+    wall4 = Sc.Figure('rect', (156, 224, 161), (1250, 0, 500, 640, 260))
+    wall5 = Sc.Figure('rect', G.BLACK, (1250, -5, 500, 650, 5))
+    wall6 = Sc.Figure('polygon', (136, 224, 161), ((1180, 460), (1250, 640), (1250, 0 ), (1180, 0)))
+    shelf = Sc.Figure('rect', (94, 81, 60), (500, 370, 400, 320, 100))
+    table2 = Sc.Sprite(textures[1], (2245, 279), (500, 500))
     start_pos = -138
     leng = 611
     floor1 = Sc.Sprite(textures[0], (start_pos, 582), (864, 350))
@@ -42,30 +49,54 @@ def start():
     floor6 = Sc.Sprite(textures[0], (1000, 518), (800, 200))
     floor7 = Sc.Sprite(textures[0], (600, 518), (800, 200))
     floor8 = Sc.Sprite(textures[0], (200, 518), (800, 200))
-    door1 = Sc.Sprite(textures[6], (1450, 50), (500, 700))
+    door1 = Sc.Sprite(textures[6], (1200, -20), (500, 700))
+    door2 = Sc.Sprite(textures[6], (2605, -40), (540, 700))
+    door3 = Sc.Sprite(textures[6], (1710, -45), (595, 700))
     #door2 = Sc.Sprite(textures[6], (1800, 20), (500, 700))
-    window = Sc.Sprite(textures[5], (850, 100), (400, 270))
-    window2 = Sc.Sprite(textures[5], (370, 100), (400, 270))
+    window = Sc.Sprite(textures[5], (900, 100), (300, 270))
+    window2 = Sc.Sprite(textures[5], (470, 100), (300, 270))
+    window3 = Sc.Sprite(textures[5], (340, 100), (300, 270))
     sofa = Sc.Sprite(textures[2], (450, 299), (500, 400))
-    table = Sc.Sprite(textures[1], (500, 359), (500, 400))
-    box = Sc.Sprite(textures[3], (40, 99), (500, 600))
-    armch = Sc.Sprite(textures[4], (950, 419), (300, 270))
-    sprites.append(floor1)
-    sprites.append(floor2)
-    sprites.append(floor3)
-    sprites.append(floor4)
-    sprites.append(floor5)
-    sprites.append(floor6)
-    sprites.append(floor7)
-    sprites.append(floor8)
-    sprites.append(window)
-    sprites.append(window2)
-    sprites.append(armch)
-    sprites.append(sofa)
-    sprites.append(table)
-    sprites.append(table2)
-    sprites.append(door1)
-    sprites.append(box)
+    table = Sc.Sprite(textures[1], (540, 344), (395, 400))
+    box = Sc.Sprite(textures[3], (70, 134), (385, 645))
+    armch = Sc.Sprite(textures[4], (900, 399), (350, 330))
+    flower1 = Sc.Sprite(textures[7], (350, 199), (200, 170))
+    flower2 = Sc.Sprite(textures[8], (750, 229), (200, 170))
+    flower3 = Sc.Sprite(textures[9], (490, 0), (300, 470))
+    trn = Sc.Sprite(textures[10], (1500, 335), (500, 425))
+    exit = Sc.Sprite(textures[11], (1955, 365), (285, 325))
+    plakat = Sc.Sprite(textures[12], (2265, 175), (300, 215))
+    plakat2 = Sc.Sprite(textures[13], (2565, 200), (125, 100))
+    mirror = Sc.Sprite(textures[14], (1590, 115), (125, 425))
+    ar1 = Sc.Area(5, 215, (40, 410), Sc.change_scene, (6, 0))
+    ar2 = Sc.Area(2955, 10, (40, 625), Sc.change_scene, (4, 1))
+    sprites['floor1'] = floor1
+    sprites['floor2'] = floor2
+    sprites['floor3'] = floor3
+    sprites['floor4'] = floor4
+    sprites['floor5'] = floor5
+    sprites['floor6'] = floor6
+    sprites['floor7'] = floor7
+    sprites['floor8'] = floor8
+    sprites['window'] = window
+    sprites['window2'] = window2
+    sprites['window3'] = window3
+    sprites['armch'] = armch
+    sprites['sofa'] = sofa
+    sprites['table'] = table
+    sprites['table2'] = table2
+    sprites['door1'] = door1
+    sprites['door2'] = door2
+    sprites['door3'] = door3
+    sprites['flower1'] = flower1
+    sprites['flower2'] = flower2
+    sprites['flower3'] = flower3
+    sprites['box'] = box
+    sprites['trn'] = trn
+    sprites['exit'] = exit
+    sprites['plakat'] = plakat
+    sprites['plakat2'] = plakat2
+    sprites['mirror'] = mirror
 
     objects.append(wall)
     objects.append(wall2)
@@ -73,10 +104,14 @@ def start():
     objects.append(wall4)
     objects.append(wall5)
     objects.append(wall6)
+    objects.append(shelf)
+    areas.append(ar1)
+    areas.append(ar2)
     if flip:
         Sc.flip_all(objects, areas, collisions,sprites, length)
-    for i in sprites:
+    for i in sprites.values():
         sprite_group.add(i)
+    keys = list(sprites.keys())
     draw_only()
     wall2.draw()
     wall3.draw()
@@ -84,11 +119,18 @@ def start():
     wall5.draw()
     wall6.draw()
     door1.draw()
-    
+    armch.draw()
+    mirror.draw()
+
 
 def draw_only():
     Sc.screen.fill((255,255,255))
     for i in objects:
+        i.draw()
+    sprite_group = pg.sprite.Group()
+    for i in keys:
+        sprite_group.add(sprites[i])
+    for i in collisions:
         i.draw()
     sprite_group.draw(Sc.screen)
 def get_scene(keys):
