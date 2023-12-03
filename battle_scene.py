@@ -19,7 +19,7 @@ bosses = []
 arrows_types = []
 arrow = 'materials/arrow2.png'
 boss = None
-boss_hp = 10
+boss_hp = 100
 animation = None
 ready = True
 now_spawn = 'cant'
@@ -28,11 +28,12 @@ now_score = 0
 now_kick = 0
 die = None
 last = 0
+die_boss = False
 
 def in_bosses():
     global bosses
     bosses = [[(['materials/tar_1.png', 'materials/tar_2.png', 'materials/tar_3.png'], [(515, 100), (515, 100), (515, 100)], [(250, 250), (250, 250), (250, 250)], [1, 0, 0], die1),
-        [(create_random_coord, 0) for x in range(1)
+        [(create_random_coord, 0) for x in range(10)
         ] + ['Çucaracha applauds!', 5],  [(create_random_coord, 0) for x in range(5)
         ] + ['Çucaracha applauds faster!', 5],  [(create_random_coord, 0) for x in range(10)
         ] + ['Çucaracha laughs!', 5],  [(create_random_coord, 0) for x in range(20)
@@ -65,6 +66,8 @@ class Player:
         self.v_x = 1
     def move(self, vel):
         if self.active:
+            if abs(vel[0]) + abs(vel[1]) == 2:
+                vel = (vel[0] / 2**0.5, vel[1] / 2**0.5)
             self.x += self.v * vel[0]
             self.y -= self.v * vel[1]
             grans = [bord[0] + bord[-1], bord[0] + bord[2] - bord[-1] - self.rect.width, bord[1] + bord[-1], bord[1] + bord[3] - bord[-1] - self.rect.height]
@@ -222,7 +225,7 @@ class Button():
         self.command = None
         self.can_press = False
     def draw(self, keys):
-        if keys[self.key]:
+        if type(keys) == pg.key.ScancodeWrapper and keys[self.key]:
             pg.draw.rect(screen, G.RED, (self.x, self.y, self.width, self.height))
             if self.can_press:
                 press(self.key, True)
@@ -487,10 +490,12 @@ def is_ready():
         can_spawn = True
         timer = - 1/ G.FPS
 def over(p):
-    global now_spawn, attack, can_spawn
+    global now_spawn, attack, can_spawn, die_boss
     if p:
-        from draw import change_scene as change
-        change(last)
+        if not die_boss:
+            from draw import change_scene as change
+            change(last)
+            die_boss = True
     else:
         attack = True
         now_spawn = 'dead'
@@ -502,10 +507,10 @@ def die1():
     image = pg.image.load('materials/tapok.png') 
     image = pg.transform.scale(image, (size[0], size[1]))
     if timer > 5 and timer <6:
-        screen.blit(image, (G.WIDTH - size[0] - (timer - 5) * (G.WIDTH//2 - size[0]//2) , 120 ))
+        screen.blit(image, (G.WIDTH - size[0] - (timer - 5) * (G.WIDTH//2 - size[0]//2) + 30 , 120 ))
         image = pg.transform.rotate(image, (timer - 5) * 90)
     elif timer >= 6 and timer < 9:
-        screen.blit(image, (G.WIDTH//2 - size[0]//2, 120))
+        screen.blit(image, (G.WIDTH//2 - size[0]//2 + 30, 120))
     elif timer >= 9:
         over(True)
 def new_perem():

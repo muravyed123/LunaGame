@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+import pygame as pg
 FPS = 60
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -12,8 +13,7 @@ WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
-WIDTH = 1280
-HEIGHT = 720
+WIDTH , HEIGHT = pg.display.set_mode((0,0), pg.FULLSCREEN).get_size()
 name = 'Kitty'
 level = 1
 def crop_image(file, count_x, count_y, need, path):
