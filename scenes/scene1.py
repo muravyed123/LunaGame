@@ -91,7 +91,6 @@ def get_scene(keys):
     screen = Sc.screen
     change_screen = Sc.change_screen
     change_screen.fill(G.WHITE)
-    screen.blit(change_screen, (0,0))
     for i in objects:
         #i.draw()
         if type(i) == Sc.CheckText:
@@ -101,7 +100,7 @@ def get_scene(keys):
     for i in areas:
         i.draw()
     #sprite_group.draw(Sc.screen)
-    return(screen)
+    return(screen, change_screen)
 def update(player, pl, vel):
     pl.is_on_floor = player.is_on_floor
     r1, r2 = pl.move_x(vel[0]), pl.move((-vel[0], vel[1]))

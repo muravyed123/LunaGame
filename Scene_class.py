@@ -120,7 +120,7 @@ class PlayLabel():
         Text = self.font.render(text, 1, pg.Color("White"))
         self.size = Text.get_size()
     def draw(self):
-        text = self.font.render(self.text, True, self.color)        
+        text = self.font.render(self.text, True, self.color, (255,255,255))
         change_screen.blit(text, (self.x, self.y))
 class CheckText(PlayLabel):
     def __init__(self, text,  pos, color, font, key, command, param):
@@ -133,7 +133,7 @@ class CheckText(PlayLabel):
         self.param = param
     def click(self, keys):
         if keys[self.key]:
-            self.command(self.param)  
+            self.command(None, None, self.param)
 class Sprite(pg.sprite.DirtySprite):
     def __init__(self, texture, pos, size = None):
         pg.sprite.Sprite.__init__(self)

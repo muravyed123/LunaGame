@@ -11,7 +11,7 @@ now_object = None
 now_key = ''
 coords = (0,0)
 speed = 10
-number = 8
+number = 26
 scene = importlib.import_module(f'scenes.scene{number}')
 active = True
 
@@ -117,7 +117,7 @@ while active:
             now_object.change_size([now_object.size[0] + size[0] * 5, now_object.size[1] + size[1] * 5])
             scene.draw_only()
     sc.fill(G.WHITE)
-    sc.blit(scene.get_scene(keys), coords)
+    sc.blit(scene.get_scene(keys)[0], coords)
     for event in events:
         if event.type == pg.QUIT:
             sys.exit()

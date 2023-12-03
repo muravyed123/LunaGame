@@ -20,7 +20,7 @@ textures = ["materials/floor.png", 'materials/stairs.png', 'materials/door4.png'
 
             ]
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
-start_position = [(200, 680), (length -200, 680)]
+start_position = [(200, 680), (length -200, 680), (1900, 680)]
 def clear():
     global collisions, objects, areas, sprites, keys
     collisions = []
@@ -46,6 +46,9 @@ def start():
 
     ar1 = Sc.Area(2945, 215, (40, 410), Sc.change_scene, (1, 0))
     ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (7, 1))
+    ar3 = Sc.Area(1770, 335, (190, 410), Sc.create_checktext, ('press [R] to go upstairs',
+                                                               (1800, 400), G.BLACK, 50, pg.K_r, Sc.change_scene,
+                                                               (13, 2)), Sc.delete_obj)
     door1 = Sc.Sprite(textures[2], (870, 0), (340, 630))
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2
@@ -56,6 +59,7 @@ def start():
     sprites['stairs'] = stairs
     areas.append(ar1)
     areas.append(ar2)
+    areas.append(ar3)
     keys = list(sprites.keys())
     draw_only()
 def draw_only():
@@ -72,17 +76,16 @@ def get_scene(keys):
     screen = Sc.screen
     change_screen = Sc.change_screen
     change_screen.fill(G.WHITE)
-    screen.blit(change_screen, (0,0))
     for i in objects:
-        #i.draw()
         if type(i) == Sc.CheckText:
             i.click(keys)
+            i.draw()
     for i in collisions:
         i.draw()
     for i in areas:
         i.draw()
     #sprite_group.draw(Sc.screen)
-    return(screen)
+    return(screen, change_screen)
 def update(player, pl, vel):
     pl.is_on_floor = player.is_on_floor
     r1, r2 = pl.move_x(vel[0]), pl.move((-vel[0], vel[1]))

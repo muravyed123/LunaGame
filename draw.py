@@ -15,7 +15,8 @@ player_active = True
 timer = 0
 now_do = 'nothing'
 scene_number = 0
-scene_way = 2
+scene_way = 1
+n = 0
 flip = False
 
 
@@ -28,13 +29,14 @@ class Camera:
         self.active = active
     def move(self, player):
         r = self.x - player.x
+        new_x = self.x
         if abs(r) > 200:
-            new_x = self.x + self.v * r// abs(r) * 0.12 * (abs(r)) ** 0.5
-            if new_x - G.WIDTH//2 <=  0:
-                new_x = G.WIDTH//2
-            if now_scene == None or new_x + G.WIDTH // 2 >= now_scene.me.length :
-                new_x = now_scene.me.length - G.WIDTH // 2
-            self.x = new_x
+            new_x += self.v * r// abs(r) * 0.006 * abs(r)
+        if new_x - G.WIDTH//2 <=  0:
+            new_x = G.WIDTH//2
+        if now_scene == None or new_x + G.WIDTH // 2 >= now_scene.me.length :
+            new_x = now_scene.me.length - G.WIDTH // 2
+        self.x = new_x
 class Player:
     def __init__(self, screen, x, y, v_y = 0, animations = {}, animated = True):
         self.x = x
@@ -136,11 +138,12 @@ class Scene:
         self.me.start()
         
     def draw(self, vel, keys):
-        surface = self.me.get_scene(keys)
+        surface , ch_surf = self.me.get_scene(keys)
         #pl.move(vel)
         position = [-self.camera.x + camera.width//2, self.camera.y]
         length = 0
         screen.blit(surface, tuple(position))
+        screen.blit(ch_surf, tuple(position))
         pl =  Player(screen, player.x , player.y, player.v_y, {}, False)
         return self.me.update(player, pl, vel)
 class BattleScene:
@@ -169,7 +172,7 @@ def change_scene(number, way):
     else:
         change_scene_final(number)
 def change_scene_final(number):
-    global now_scene, ex, now_do, player_active, scene_number, flip
+    global now_scene, ex, now_do, player_active, scene_number, flip,n
     from main import exit_pr
     ex = exit_pr
     now_scene = Scene(number, player, camera)
@@ -181,6 +184,7 @@ def change_scene_final(number):
         player.flip_h = not player.flip_h
     else:
         player.x, player.y = now_scene.me.start_position[scene_way]
+    n = 0
     scene_number = 0
 
 
@@ -213,6 +217,7 @@ animations = {'walk' : [Sc.give_list_an('Animations/wh_cat_walk'), 5],
                      'stay' : [Sc.give_list_an('Animations/wh_cat_stay'), 10] }
 player = Player(screen, 100, 200, 0, animations)
 def update(event, keys):
+    global n
     """
     event: 
     keys: 
@@ -234,12 +239,15 @@ def update(event, keys):
     if player_active:
         vel = now_scene.draw(vel, keys)
     else:
-        vel = now_scene.draw(vel, [False] * 512)
+        vel = now_scene.draw([0,0], [False] * 512)
     if not in_battle:
         if last_scene == 0:
             player.draw()
         if player_active:
             player.move(vel)
+            n += 1/G.FPS
+            #if abs(n % 1 - 1) <= 1/G.FPS * 0.5:
+                #now_scene.me.draw_only()
             if keys[pg.K_q]:
                 if now_scene.me.flip_scene != None:
                     change_scene(now_scene.me.flip_scene, 0)

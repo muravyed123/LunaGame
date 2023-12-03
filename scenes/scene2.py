@@ -39,7 +39,7 @@ def start():
     wall6 = Sc.Figure('polygon', (136, 224, 161), ((1180, 460), (1250, 640), (1250, 0 ), (1180, 0)))
     shelf = Sc.Figure('rect', (94, 81, 60), (500, 370, 400, 320, 100))
     table2 = Sc.Sprite(textures[1], (2245, 279), (500, 500))
-    start_pos = -138
+    start_pos = -170
     leng = 611
     floor1 = Sc.Sprite(textures[0], (start_pos, 582), (864, 350))
     floor2 = Sc.Sprite(textures[0], (start_pos + leng * 1, 582), (864, 350))
@@ -137,7 +137,6 @@ def get_scene(keys):
     screen = Sc.screen
     change_screen = Sc.change_screen
     change_screen.fill(G.WHITE)
-    screen.blit(change_screen, (0,0))
     for i in objects:
         #i.draw()
         if type(i) == Sc.CheckText:
@@ -147,7 +146,7 @@ def get_scene(keys):
     for i in areas:
         i.draw()
     #sprite_group.draw(Sc.screen)
-    return(screen)
+    return(screen, change_screen)
 def update(player, pl, vel):
     pl.is_on_floor = player.is_on_floor
     r1, r2 = pl.move_x(vel[0]), pl.move((-vel[0], vel[1]))
