@@ -9,7 +9,7 @@ collisions = []
 objects = []
 areas = []
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
-flip_scene = 22
+flip_scene = 32
 sprites = {}
 sprite_group = pg.sprite.Group()
 keys = []
@@ -17,7 +17,8 @@ flip = False
 length = 3000
 
 textures = ["materials/floor.png", 'materials/door2.png', 'materials/door3.png', 'materials/door5.png',
-            'materials/door6.png', 'materials/stairs.png', 'materials/door7.png']
+            'materials/door6.png', 'materials/stairs.png', 'materials/door7.png', 'materials/door4.png',
+            'materials/door10.png']
 
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
 start_position = [(200, 680), (length -200, 680), (1800, 680)]
@@ -44,16 +45,16 @@ def start():
     floor5 = Sc.Sprite(textures[0], (start_pos + leng * 4, 582), (864, 350))
     stairs = Sc.Sprite(textures[5], (1395, -20), (535, 630))
     ar1 = Sc.Area(1685, 335, (160, 410), Sc.create_checktext,
-                  ('press [T] to go downstairs', (1700, 400), G.BLACK, 50, pg.K_t, Sc.change_scene, (11, 2)),
+                  ('press [T] to go downstairs', (1700, 400), G.BLACK, 50, pg.K_t, Sc.change_scene, (21, 2)),
                   Sc.delete_obj)
     ar4 = Sc.Area(1670, 335, (200, 410), Sc.create_checktext,
-                  ('press [R] to go upstairs', (1700, 300), G.BLACK, 50, pg.K_r, Sc.change_scene, (31, 2)),
+                  ('press [R] to go upstairs', (1700, 300), G.BLACK, 50, pg.K_r, Sc.change_scene, (41, 2)),
                   Sc.delete_obj)
-    ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (19, 1))
-    ar3 = Sc.Area(2930, 65, (40, 625), Sc.change_scene, (25, 0))
-    door1 = Sc.Sprite(textures[6], (740, 45), (300, 565))
-    door2 = Sc.Sprite(textures[2], (2280, 25), (320, 605))
-    door3 = Sc.Sprite(textures[4], (120, 40), (270, 570))
+    ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (29, 1))
+    ar3 = Sc.Area(2930, 65, (40, 625), Sc.change_scene, (35, 0))
+    door1 = Sc.Sprite(textures[1], (705, -30), (500, 685))
+    door2 = Sc.Sprite(textures[3], (2265, 50), (305, 550))
+    door3 = Sc.Sprite(textures[7], (120, 50), (310, 580))
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2
     sprites['floor3'] = floor3

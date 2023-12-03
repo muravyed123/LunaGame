@@ -17,7 +17,7 @@ flip = True
 length = 3000
 
 textures = ["materials/floor.png", 'materials/door2.png', 'materials/door3.png', 'materials/door5.png',
-            'materials/door6.png', 'materials/door7.png']
+            'materials/door6.png', 'materials/door9.png']
 
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
 start_position = [(200, 680), (length -200, 680), (2000, 680)]
@@ -32,10 +32,12 @@ def clear():
 def start():
     global keys
     wall = Sc.Figure('rect', (156, 224, 161), (0, 0, 3000, 600, 350))
+    wallp = Sc.Figure('rect', (199, 125, 181), (600, 0, 1200, 600, 550))
     bord = Sc.Figure('rect', (102, 84, 63), (0, 350, 3000, 70, 35))
     start_pos = -170
     leng = 611
     objects.append(wall)
+    objects.append(wallp)
     objects.append(bord)
     floor1 = Sc.Sprite(textures[0], (start_pos, 582), (864, 350))
     floor2 = Sc.Sprite(textures[0], (start_pos + leng * 1, 582), (864, 350))
@@ -44,10 +46,8 @@ def start():
     floor5 = Sc.Sprite(textures[0], (start_pos + leng * 4, 582), (864, 350))
     ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (24, 0))
     ar3 = Sc.Area(2930, 65, (40, 625), Sc.change_scene, (22, 1))
-    door1 = Sc.Sprite(textures[1], (175, -20), (535, 670))
-    door2 = Sc.Sprite(textures[5], (2475, 80), (280, 535))
-    door3 = Sc.Sprite(textures[4], (1055, 75), (275, 530))
-    door4 = Sc.Sprite(textures[2], (1760, 40), (310, 590))
+    door1 = Sc.Sprite(textures[4], (2530, 75), (275, 530))
+    door2 = Sc.Sprite(textures[5], (1190, 45), (410, 560))
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2
     sprites['floor3'] = floor3
@@ -55,8 +55,6 @@ def start():
     sprites['floor5'] = floor5
     sprites['door1'] = door1
     sprites['door2'] = door2
-    sprites['door3'] = door3
-    sprites['door4'] = door4
     areas.append(ar2)
     areas.append(ar3)
     keys = list(sprites.keys())

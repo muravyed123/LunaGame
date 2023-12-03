@@ -17,7 +17,7 @@ flip = True
 length = 3000
 
 textures = ["materials/floor.png", 'materials/door2.png', 'materials/door3.png', 'materials/door5.png',
-            'materials/door6.png', 'materials/stairs.png']
+            'materials/door6.png', 'materials/stairs.png', 'materials/evacuation.png']
 
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
 start_position = [(200, 680), (length -200, 680), (2000, 680)]
@@ -48,6 +48,7 @@ def start():
     door2 = Sc.Sprite(textures[2], (2460, 30), (340, 600))
     door3 = Sc.Sprite(textures[4], (165, 60), (275, 545))
     door4 = Sc.Sprite(textures[2], (885, 15), (345, 615))
+    evac = Sc.Sprite(textures[6], (1455, 170), (205, 160))
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2
     sprites['floor3'] = floor3
@@ -57,6 +58,7 @@ def start():
     sprites['door2'] = door2
     sprites['door3'] = door3
     sprites['door4'] = door4
+    sprites['evac'] = evac
     areas.append(ar1)
     areas.append(ar2)
     keys = list(sprites.keys())

@@ -103,7 +103,6 @@ class Player:
         return pg.Rect(self.x, self.y, self.rect.width, self.rect.height)
     def push(self, y):
         self.y = y
-        print(self.v_y)
         if self.v_y > 0:
             self.is_on_floor = True
         self.v_y = 0    

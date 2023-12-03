@@ -19,7 +19,7 @@ length = 3000
 textures = ["materials/floor.png", 'materials/door2.png', 'materials/door3.png', 'materials/door5.png', 'materials/door6.png', 'materials/stairs.png']
 
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
-start_position = [(200, 680), (length -200, 680), (2000, 680)]
+start_position = [(200, 680), (length -200, 680), (1800, 680)]
 def clear():
     global collisions, objects, areas, sprites, keys
     collisions = []

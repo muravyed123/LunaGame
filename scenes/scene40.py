@@ -9,18 +9,18 @@ collisions = []
 objects = []
 areas = []
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
-flip_scene = 22
+flip_scene = 39
 sprites = {}
 sprite_group = pg.sprite.Group()
 keys = []
-flip = False
+flip = True
 length = 3000
 
 textures = ["materials/floor.png", 'materials/door2.png', 'materials/door3.png', 'materials/door5.png',
-            'materials/door6.png', 'materials/stairs.png', 'materials/door7.png']
+            'materials/door6.png', 'materials/door7.png', 'materials/green_exit2.png']
 
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
-start_position = [(200, 680), (length -200, 680), (1800, 680)]
+start_position = [(200, 680), (length -200, 680), (2000, 680)]
 def clear():
     global collisions, objects, areas, sprites, keys
     collisions = []
@@ -42,18 +42,12 @@ def start():
     floor3 = Sc.Sprite(textures[0], (start_pos + leng * 2, 582), (864, 350))
     floor4 = Sc.Sprite(textures[0], (start_pos + leng * 3, 582), (864, 350))
     floor5 = Sc.Sprite(textures[0], (start_pos + leng * 4, 582), (864, 350))
-    stairs = Sc.Sprite(textures[5], (1395, -20), (535, 630))
-    ar1 = Sc.Area(1685, 335, (160, 410), Sc.create_checktext,
-                  ('press [T] to go downstairs', (1700, 400), G.BLACK, 50, pg.K_t, Sc.change_scene, (11, 2)),
-                  Sc.delete_obj)
-    ar4 = Sc.Area(1670, 335, (200, 410), Sc.create_checktext,
-                  ('press [R] to go upstairs', (1700, 300), G.BLACK, 50, pg.K_r, Sc.change_scene, (31, 2)),
-                  Sc.delete_obj)
-    ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (19, 1))
-    ar3 = Sc.Area(2930, 65, (40, 625), Sc.change_scene, (25, 0))
-    door1 = Sc.Sprite(textures[6], (740, 45), (300, 565))
-    door2 = Sc.Sprite(textures[2], (2280, 25), (320, 605))
-    door3 = Sc.Sprite(textures[4], (120, 40), (270, 570))
+    ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (32, 1))
+    ar3 = Sc.Area(2930, 65, (40, 625), Sc.change_scene, (34, 0))
+    door1 = Sc.Sprite(textures[5], (285, 55), (300, 555))
+    door2 = Sc.Sprite(textures[2], (2505, 15), (340, 615))
+    door3 = Sc.Sprite(textures[3], (1025, 55), (305, 545))
+    door4 = Sc.Sprite(textures[4], (1775, 55), (270, 545))
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2
     sprites['floor3'] = floor3
@@ -62,11 +56,9 @@ def start():
     sprites['door1'] = door1
     sprites['door2'] = door2
     sprites['door3'] = door3
-    sprites['stairs'] = stairs
-    areas.append(ar4)
+    sprites['door4'] = door4
     areas.append(ar2)
     areas.append(ar3)
-    areas.append(ar1)
     keys = list(sprites.keys())
     draw_only()
 def draw_only():
@@ -84,9 +76,9 @@ def get_scene(keys):
     change_screen = Sc.change_screen
     change_screen.fill(G.WHITE)
     for i in objects:
+        #i.draw()
         if type(i) == Sc.CheckText:
             i.click(keys)
-            i.draw()
     for i in collisions:
         i.draw()
     for i in areas:

@@ -15,12 +15,12 @@ screen = pg.Surface((1280, 720), G.WHITE)
 
 class Button:
     def __init__(self, text,  pos, font, bg, screen):
-        # Я не знаю как передавать в инит команду, которую будет выполнять кнопка при нажатии, пока пусть будет типом задаваться.
-        self.x, self.y = pos
         self.font = pg.font.SysFont('arial', font)
         self.screen = screen
         self.n = 0
         self.sost = False
+        self.x = pos[0]
+        self.y = pos[1]
         self.rect = pg.Rect(self.x, self.y, 5, 5)
         self.text = text
         self.bg = bg
@@ -125,7 +125,7 @@ def start():
     text = separate('dialogues\dialogue0.txt')
     but = Button("Start", (600, 400), 30, "navy", screen)
     but.command = but.exit
-    dialogues.append(Dialogue(screen, text, 'Luna', 'Kitty'))
+    #dialogues.append(Dialogue(screen, text, 'Luna', 'Kitty'))
     #buttons.append(but)
     text = Text("Start", (800, 600), "navy", 30, screen)
     #texts.append(text)
