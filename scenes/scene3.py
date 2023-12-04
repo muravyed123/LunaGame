@@ -34,6 +34,8 @@ def start():
     bord = Sc.Figure('rect', (102, 84, 63), (0, 350, 3000, 70, 35))
     objects.append(wall)
     objects.append(bord)
+    label = Sc.PlayLabel('1 ЭТАЖ', (1550, 50), (100, 0, 0), 50)
+    objects.append(label)
     start_pos = -138
     leng = 611
     floor1 = Sc.Sprite(textures[0], (start_pos, 582), (864, 350))
@@ -87,6 +89,8 @@ def get_scene(keys):
         #i.draw()
         if type(i) == Sc.CheckText:
             i.click(keys)
+            i.draw()
+        elif type(i) == Sc.PlayLabel:
             i.draw()
     for i in collisions:
         i.draw()

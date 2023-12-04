@@ -36,6 +36,8 @@ def start():
     stairs = Sc.Sprite(textures[1], (1485, -20), (535, 630))
     start_pos = -138
     leng = 611
+    label = Sc.PlayLabel('1 ЭТАЖ', (1200, 50), (100, 0, 0), 50)
+    objects.append(label)
     objects.append(wall)
     objects.append(bord)
     floor1 = Sc.Sprite(textures[0], (start_pos, 582), (864, 350))
@@ -79,6 +81,8 @@ def get_scene(keys):
     for i in objects:
         if type(i) == Sc.CheckText:
             i.click(keys)
+            i.draw()
+        if type(i) == Sc.PlayLabel:
             i.draw()
     for i in collisions:
         i.draw()

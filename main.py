@@ -15,7 +15,7 @@ def exit_pr():
     active = False
     sys.exit()
 menu.start()
-draw.change_scene(41, 1)
+draw.change_scene(1, 1)
 pg.display.set_caption('Game')
 #sound.start_play_fon_music(0)
 while active:

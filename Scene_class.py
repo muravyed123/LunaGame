@@ -3,6 +3,7 @@ import globalsc as G
 
 screen = pg.Surface((G.WIDTH * 2, G.HEIGHT), G.WHITE)
 change_screen = pg.Surface((G.WIDTH * 2, G.HEIGHT), G.WHITE)
+pg.font.init()
 """"global collisions, objects, areas
     colis1 = Sc.CollisionShape(0, 0, (20, 460))
     colis2 = Sc.CollisionShape(1000, 0, (20, 460))
@@ -184,30 +185,6 @@ class AnimatedSprite():
             self.image = pg.transform.scale(
                 self.image, (self.size[0], self.size[1]))   
             change_screen.blit(self.image, self.rect)
-class Dialogue():
-    def __init__(self):
-        self.r = 10
-        self.x = 100
-        self.y = 100
-        self.color = G.BLACK
-        self.r = 5
-        self.tx = 300
-        self.ty = 100
-        self.v = 30
-    def draw(self):
-        rect = pg.Rect(self.x, self.y, 300, 300)
-        pg.draw.rect(self.screen, self.color, rect, border_radius = self.r)
-    def interior(self):
-        file = open('dialogues\dialogue0.txt', 'r')
-        text = list(map(lambda x: x.rstrip("\\"), file.readlines()))
-        for i in range(len(text)):
-            if i % 2 == 0:
-                lab1 = Sc.PlayLabel(text[i], (self.tx, self.ty), G.WHITE, 30)
-                objects.append(lab1)
-            else:                
-                lab2 = Sc.PlayLabel(text[i], (self.tx, self.ty), G.WHITE, 30)
-                objects.append(lab2)
-            self.ty += self.v
 class KinematicBody():
     def __init__(self, obj, typ, parameters):
         self.obj = obj

@@ -52,8 +52,10 @@ def start():
     plak2 = Sc.Sprite(textures[8], (1130, 175), (160, 200))
     ar1 = Sc.Area(5, 215, (40, 410), Sc.change_scene, (5, 1))
     ar2 = Sc.Area(2955, 10, (40, 625), Sc.change_scene, (3, 0))
+    ar3 = Sc.Area(1400, 630, (40, 100), Sc.go_in_btl, (1))
     areas.append(ar1)
     areas.append(ar2)
+    areas.append(ar3)
     objects.append(wall)
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2

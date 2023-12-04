@@ -15,7 +15,7 @@ player_active = True
 timer = 0
 now_do = 'nothing'
 scene_number = 0
-scene_way = 1
+scene_way = 2
 n = 0
 flip = False
 
@@ -161,7 +161,7 @@ def change_scene(number, way):
     global timer, now_do, player_active, scene_number, in_battle, now_scene, scene_way
     scene_number = number
     timer = 0
-    if now_scene != None:
+    if now_scene != None and type(now_scene)!= BattleScene:
         now_do = 'animation'
         player_active = False
         in_battle = False
