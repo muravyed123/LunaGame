@@ -55,7 +55,9 @@ def start():
     ar3 = Sc.Area(1400, 630, (40, 100), Sc.go_in_btl, (1))
     areas.append(ar1)
     areas.append(ar2)
-    areas.append(ar3)
+    from draw import checkpoints as ch
+    if not ch[0]:
+        areas.append(ar3)
     objects.append(wall)
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2

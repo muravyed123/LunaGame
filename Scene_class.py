@@ -93,20 +93,39 @@ class Area():
         
         self.info = 0
         self.is_collid = False
+        self.once = False
+        if signal == go_in_btl:
+            self.once = True
+        self.need = True
     def is_collide(self, rec):
         t = self.rect.colliderect(rec)
+        if not self.need:
+            return((False, None, None))
         if t:
             if not self.is_collid:
                 self.is_collid = True
+                if self.signal_ex == None and self.once and self.need:
+                    self.rect = pg.Rect(0,0,0,0)
+                    self.x = 0
+                    self.y = 0
+                    self.size = (0,0)
+                    self.need = False
                 return((t, self.signal, self.p1))
             else:
                 return((t, None, None))
         else:
             #print(self.is_collid)
             if self.is_collid:
-                self.is_collid = False  
+                self.is_collid = False
+                if self.signal_ex != None and self.once and self.need:
+                    self.rect = pg.Rect(0, 0, 0, 0)
+                    self.x = 0
+                    self.y = 0
+                    self.size = (0, 0)
+                    self.need = False
                 return((t, self.signal_ex, self.p2))
-            else: return((t, None, None))
+            else:
+                return((t, None, None))
     def change_size(self, size):
         self.size = tuple(size)
         self.rect = pg.Rect((self.x, self.y, self.size[0], self.size[1]))
@@ -218,6 +237,7 @@ def give_list_an(file_name):
     return anim
 def go_in_btl(obj = None, scene = None, number = None):
     from draw import go_in_battle as battle
+    delete_obj(obj, scene, number)
     battle(number)
 def flip_all(obj, ar, col, sprites, length):
     for i in obj:

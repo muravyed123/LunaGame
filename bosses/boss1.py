@@ -8,7 +8,7 @@ textures = ['materials/tar_1.png', 'materials/tar_2.png', 'materials/tar_3.png']
 sizes = [(250, 250), (250, 250), (250, 250)]
 coords = [(675, 100), (675, 100), (675, 100)]
 can_move = [1, 0, 0]
-texts =  ['Çucaracha applauds faster!','Çucaracha laughs!', 'Auuufff']
+texts = ['ЗАЧЕМ ТЫ НАРУШИЛ МОЙ ПОКОЙ','Çucaracha applauds faster!','Çucaracha laughs!', 'Auuufff']
 defns = [5, 5, 5, 5]
 screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
 boss_attacks = []
@@ -106,6 +106,8 @@ class Boss():
         elif self.timer >= 6 and self.timer < 9:
             screen.blit(image, (G.WIDTH // 2 - size[0] // 2 + 30, 120))
         elif self.timer >= 9:
+            from draw import checkpoints as ch
+            ch[0] = True
             return(True)
         self.timer += 1/ G.FPS
         return(False)

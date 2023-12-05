@@ -292,8 +292,9 @@ def damage_boss(damage):
     for i in buttons:
         i.can_press = False  
 def show_text():
-    global timer, now_spawn
+    global timer, now_spawn, attack
     now_spawn = 'text'
+    attack = True
     timer = 0
 def draw_damage(count):
     global timer
@@ -429,7 +430,8 @@ def new_perem():
     now_score = 0
     now_kick = 0    
 def start(number, last_scene):
-    global player, health, now_played, now_scene, boss, last, boss_hp
+    global player, health, boss, last, boss_hp, n_start
+    n_start = True
     new_perem()
     borders = Object('rect', G.WHITE, list(bord))
     objects.append(borders)
@@ -455,21 +457,23 @@ def start(number, last_scene):
     objects.append(s2)
     boss = Boss(number)
     boss_hp = boss.scene.hitpoints
-    now_scene = 1   
+    show_text()
     last = last_scene
 def get_scene(keys):
-    global attack, now_spawn, now_score, boss_hp
+    global attack, now_spawn, now_score, boss_hp, n_start
     screen.fill(G.BLACK)
     if now_spawn!='dead':
         boss.draw()
-        health.draw()
-        for i in objects[1:]:
-            i.draw()
+        if not n_start:
+            health.draw()
+            for i in objects[1:]:
+                i.draw()
     if attack:
         if now_spawn != 'dead':
             boss.draw()
-            for i in buttons:
-                i.draw(keys)
+            if not n_start:
+                for i in buttons:
+                    i.draw(keys)
         if now_spawn == 'can':
             if not draw_arrow():
                 now_spawn = 'press'
@@ -493,6 +497,7 @@ def get_scene(keys):
         elif now_spawn == 'text':
             if not draw_text(keys):
                 battle()
+                n_start = False
         elif now_spawn == 'die':
             is_over = boss.die()
             if is_over:
@@ -506,9 +511,9 @@ def get_scene(keys):
             player.draw()
         if not ready:
             is_ready()
-    if boss.is_collide(player):
-        player.hit()
-    boss.give_attacks(player, can_spawn)
+        if boss.is_collide(player):
+            player.hit()
+        boss.give_attacks(player, can_spawn)
     if not can_spawn:
         if len(boss.scene.draw_attacks) !=0:
             if now_spawn != 'dead':

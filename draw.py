@@ -18,6 +18,7 @@ scene_number = 0
 scene_way = 2
 n = 0
 flip = False
+checkpoints = [False, True]
 
 
 class Camera:
@@ -120,7 +121,7 @@ class Player:
             else:          
                 image = pg.image.load(images[-1])
         image = pg.transform.scale(
-                image, (self.rect.width * 1.32, self.rect.height *1.32))   
+                image, (self.rect.width * 1.32, self.rect.height * 1.32))
         image = pg.transform.flip(image, self.flip_h, False)
         #pg.draw.rect(screen, G.BLACK, (self.rect.x - camera.x + camera.width // 2, self.y, self.rect.width, self.rect.height))
         screen.blit(image, (self.x - camera.x +camera.width//2 - self.add_x, self.y))  
@@ -150,11 +151,35 @@ class BattleScene:
         self.number = number
         self.me = Bscene
         self.me.start(number, last_scene)
+        self.coords = [player.x - camera.x + camera.width//2, player.y]
+        self.me.player.rect.x = self.coords[0]
+        self.me.player.rect.y = self.coords[1]
+        self.timer = 0
         
     def draw(self, vel, keys):
-        surface = self.me.get_scene(keys)
-        self.me.update(vel)
-        screen.blit(surface, (0, 0))
+        global now_do
+        if now_do != 'st_b_an':
+            surface = self.me.get_scene(keys)
+            self.me.update(vel)
+            screen.blit(surface, (0, 0))
+        else:
+            surface = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
+            surface.fill(G.BLACK)
+            t_p = 0.5
+            timer = self.timer
+            if self.timer >= t_p:
+                timer = t_p
+                surf = self.me.screen
+                surf.fill(G.WHITE)
+                self.me.player.draw()
+                surface.blit(surf, (0, 0))
+                self.me.player.rect.x = self.coords[0] + (self.me.player.x - self.coords[0]) *(self.timer - t_p)
+                self.me.player.rect.y = self.coords[1] + (self.me.player.y - self.coords[1]) * (self.timer - t_p)
+                if self.timer >= t_p + 1:
+                    now_do = 'nothing'
+            surface.set_alpha(255 * (t_p - abs(timer - t_p)) // t_p)
+            self.timer += 1/G.FPS
+            screen.blit(surface, (0, 0))
         return (0, 0)   
 
 def change_scene(number, way):
@@ -169,6 +194,12 @@ def change_scene(number, way):
         scene_way = way
         player.animation = 'stay'
     else:
+        if type(now_scene) == BattleScene:
+            now_do = 'animation'
+            player_active = False
+            in_battle = False
+            timer = 1.5
+            scene_way = way
         change_scene_final(number)
 def change_scene_final(number):
     global now_scene, ex, now_do, player_active, scene_number, flip,n
@@ -188,11 +219,12 @@ def change_scene_final(number):
 
 
 def go_in_battle(number):
-    global now_scene, last_scene, in_battle
+    global now_scene, last_scene, in_battle, now_do
     if now_scene != None: 
         last_scene = now_scene.number
     now_scene = BattleScene(number)
     in_battle = True
+    now_do = 'st_b_an'
 
 def lose():
     ex()
@@ -216,7 +248,6 @@ animations = {'walk' : [Sc.give_list_an('Animations/wh_cat_walk'), 5],
                      'stay' : [Sc.give_list_an('Animations/wh_cat_stay'), 10] }
 player = Player(screen, 100, 200, 0, animations)
 def update(event, keys):
-    global n
     """
     event: 
     keys: 
@@ -240,13 +271,9 @@ def update(event, keys):
     else:
         vel = now_scene.draw([0,0], [False] * 512)
     if not in_battle:
-        if last_scene == 0:
-            player.draw()
+        player.draw()
         if player_active:
             player.move(vel)
-            n += 1/G.FPS
-            #if abs(n % 1 - 1) <= 1/G.FPS * 0.5:
-                #now_scene.me.draw_only()
             if keys[pg.K_q]:
                 if now_scene.me.flip_scene != None:
                     change_scene(now_scene.me.flip_scene, 0)
@@ -256,5 +283,8 @@ def update(event, keys):
                 player.move([0,0])
                 animate_black()
         camera.move(player)
+    else:
+        if now_do == 'st_b_an' and now_scene.timer <= 0.5 :
+            player.draw()
 
     return(screen)
