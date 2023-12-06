@@ -247,6 +247,13 @@ animations = {'walk' : [Sc.give_list_an('Animations/wh_cat_walk'), 5],
                      'jump' : [Sc.give_list_an('Animations/wh_cat_jump'), 8], 
                      'stay' : [Sc.give_list_an('Animations/wh_cat_stay'), 10] }
 player = Player(screen, 100, 200, 0, animations)
+def remove_checkpoints(number):
+    global checkpoints
+    checkpoints[number] = not checkpoints[number]
+def change_activity(value):
+    global player_active
+    player_active = value
+
 def update(event, keys):
     """
     event: 
@@ -279,8 +286,8 @@ def update(event, keys):
                     change_scene(now_scene.me.flip_scene, 0)
                     flip = True
         else:
+            player.move([0, 0])
             if now_do == 'animation':
-                player.move([0,0])
                 animate_black()
         camera.move(player)
     else:

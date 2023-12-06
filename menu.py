@@ -9,7 +9,7 @@ buttons = []
 texts = []
 pg.init()
 
-persons =[['materials/Lunaface.png', (100, 100), 'dialogues\dialogue0.txt', 'Luna']]
+dialogs =[['materials/Lunaface.png', (100, 100), 'dialogues\dialogue0.txt', 'Luna']]
 dialogues = []
 index = 0
 
@@ -96,8 +96,10 @@ class Dialogue:
         self.tx = G.WIDTH // 2 - 600
         self.ty = G.HEIGHT - 130
         self.active = False
-    def restart(self,index,  params):
+        self.index = 0
+    def restart(self,index,  params, signal, sig_par):
         image, size, path_t, name = params
+        self.signal = signal
         self.label = [name, G.name]
         text = separate(path_t)
         self.text = [self.label[0] + ": " + text[i] for i in range(len(text))]
@@ -112,6 +114,7 @@ class Dialogue:
         self.image = pg.transform.scale(
             image, (size[0], size[1]))
         self.active_k = True
+        self.sig_par = sig_par
     def show(self):
         if self.active:
             pg.draw.rect(self.screen, self.color_window, (200, 730, 1200, 800), border_radius=self.r)
@@ -124,6 +127,14 @@ class Dialogue:
             else:
                 self.active = False
                 now_text = '...'
+                self.signal(self.sig_par[0])
+                if self.sig_par[-1] == 'delete_last':
+                    from draw import now_scene as n
+                    n.me.objects[-1].go_back()
+                    print(self.sig_par)
+
+                from draw import change_activity as ch
+                ch(True)
 
             if self.now_length > len(now_text):
                 self.now_length = len(now_text)
@@ -176,7 +187,7 @@ def start():
     global signal, index
     #Add function "Enter your name"
     d = Dialogue(screen)
-    d.restart(index, tuple(persons[0]))
+    #d.restart(index, tuple(persons[0]))
     dialogues.append(d)
     but = Button("Start", (600, 400), 30, "navy", screen)
     but.command = but.exit
@@ -185,6 +196,10 @@ def start():
     #texts.append(text)
     pan = Panel((800, 450), (30, 40), G.GREEN, screen)
     #panels.append(pan)
+def create_dialog(number, signal, sig_par):
+    dialogues[0].restart(index, tuple(dialogs[number]), signal, sig_par)
+    from draw import change_activity as ch
+    ch(False)
 def update(events, keys):
     screen.fill(G.WHITE)
     #Background(screen).show()

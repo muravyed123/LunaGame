@@ -226,7 +226,10 @@ class KinematicBody():
         self.typ = typ
         self.p = parameters
         self.signal = True
+        self.die = False
+        self.can_die = False
         if typ == 2:
+            self.start_anim = (obj.images, obj.speed, not obj.flip, obj.stop, obj.size)
             obj.rect.x = self.p['start_pos'][0]
             obj.rect.y = self.p['start_pos'][1]
     def move(self):
@@ -236,9 +239,14 @@ class KinematicBody():
         elif self.typ == 2:
             if abs(self.obj.rect.x - self.p['end_pos'][0]) < self.p['speed']:
                 if self.signal:
-                    anim, speed, flip, stop, pos, size =  self.p['parametersforanim']
+                    anim, speed, flip, stop, pos, size = self.p['parametersforanim']
                     self.obj.change_anim(anim,  speed, flip, stop, pos, size)
                     self.signal = False
+                    self.p['finsignal'](self.p['finpar'])
+                if self.can_die:
+                    self.die = True
+
+
             else:
                 vec1 = (self.p['end_pos'][0] - self.p['start_pos'][0])/ abs((self.p['end_pos'][0] - self.p['start_pos'][0]))
                 vec2 = (self.p['end_pos'][1] - self.p['start_pos'][1]) / abs((self.p['end_pos'][0] - self.p['start_pos'][0]))
@@ -246,6 +254,13 @@ class KinematicBody():
                 self.obj.rect.y += self.p['speed'] * vec2
     def draw(self):
         self.obj.draw()
+    def go_back(self):
+        self.p['end_pos'], self.p['start_pos'] = self.p['start_pos'], self.p['end_pos']
+        self.p['speed'] = self.p['speed'] * 2
+        anim, speed, flip, stop, size = self.start_anim
+        self.obj.change_anim(anim, speed, flip, stop, self.p['start_pos'], size)
+        self.can_die = True
+
 
         
 def change_scene(obj = None, scene = None, param = None):
@@ -266,11 +281,15 @@ def create_checktext(obj, scene, param):
     obj.info = len(scene)
     scene.append(cht_n)
 def create_animated_object(obj, scene, param):
-    print(param)
-    animation, speed_of_animation, flip1, size1, start_pos, end_animation, speed_end_animation, flip2, size2, end_pos, speed = param
+    animation, speed_of_animation, flip1, size1, start_pos, end_animation, speed_end_animation, flip2, size2, end_pos, speed, final_signal, par, need_stop = param
     obj = AnimatedSprite(animation, speed_of_animation, flip1, False, start_pos, size1)
-    kinobj = KinematicBody(obj, 2, {'speed' : speed, 'end_pos': end_pos, 'start_pos': start_pos, 'parametersforanim':(end_animation, speed_end_animation, flip2, False, end_pos, size2) })
+    kinobj = KinematicBody(obj, 2, {'speed' : speed, 'end_pos': end_pos, 'start_pos': start_pos, 'parametersforanim':(end_animation, speed_end_animation, flip2, False, end_pos, size2), 'finsignal' : final_signal, 'finpar':par})
     scene.append(kinobj)
+    if need_stop:
+        from draw import change_activity as ch
+        ch(False)
+        from draw import now_scene as n
+        del n.me.areas[-1]
 
 def give_list_an(file_name):
     anim = [file_name + '/' + str(x) + '.png' for x in range(1, G.howmanyFiles(file_name) + 1)]

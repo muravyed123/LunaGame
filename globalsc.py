@@ -26,8 +26,15 @@ def crop_image(file, count_x, count_y, need, path):
             if number in need:
                 n_path = path + str(number - need[0] + 1) + '.png'
                 im_crop.save(n_path)
-crop_image('materials/Lunago.png', 3, 3, [x + 1 for x in range(8)], 'Animations/luna_go/')
+#crop_image('materials/Lunago2.png', 3, 3, [x + 1 for x in range(8)], 'Animations/luna_go/')
 def howmanyFiles(path):
     dirs = os.listdir(path)
     return(len(dirs))
+def create_dialog(par):
+    number, signal, sig_par = par
+    from menu import create_dialog
+    create_dialog(number, signal, sig_par)
+def remove_checkpoint(number):
+    from draw import remove_checkpoints as remove
+    remove(int(number))
 #print(howmanyFiles('Animations/bl_cat_go'))
