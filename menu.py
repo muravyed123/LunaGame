@@ -9,9 +9,13 @@ buttons = []
 texts = []
 pg.init()
 
+persons =[['materials/Lunaface.png', (100, 100), 'dialogues\dialogue0.txt', 'Luna']]
 dialogues = []
+index = 0
 
-screen = pg.Surface((1280, 720), G.WHITE)
+signal = True
+
+screen = pg.Surface((G.WIDTH, G.HEIGHT), G.WHITE)
 
 class Button:
     def __init__(self, text,  pos, font, bg, screen):
@@ -81,57 +85,107 @@ class Background:
         self.bg = pg.transform.scale(self.bg, (G.WIDTH, G.HEIGHT))
     def show(self):
         screen.blit(self.bg, (0, 0))
-class Dialogue():
-    def __init__(self, screen, text, person, name):
-        self.r = 10
-        self.x = G.WIDTH // 2 - 400
-        self.y = G.HEIGHT // 2 - 350
-        self.color = G.BLACK
-        self.r = 5
-        self.tx = G.WIDTH // 2
-        self.ty = G.HEIGHT - 10
-        self.v = 0.5
-        self.index = 0
-        self.font = pg.font.SysFont("Arial", 30)
-        self.label = [person, name]
-        self.text = [self.label[i % 2] + ": " + text[i] for i in range(len(text))]
+class Dialogue:
+    def __init__(self, screen):
         self.screen = screen
-        self.now_text = text[self.index]
-
+        self.color = (255, 255, 255)
+        self.x = 0
+        self.y = G.HEIGHT // 2 - 350
+        self.color_window = G.BLACK
+        self.r = 10
+        self.tx = G.WIDTH // 2 - 600
+        self.ty = G.HEIGHT - 130
+        self.active = False
+    def restart(self,index,  params):
+        image, size, path_t, name = params
+        self.label = [name, G.name]
+        text = separate(path_t)
+        self.text = [self.label[0] + ": " + text[i] for i in range(len(text))]
+        self.index = index
+        self.active = True
+        self.timer = 0
+        self.now_length = 0
+        self.font = pg.font.SysFont('times new roman', 30)
+        self.typing_speed = 100
+        self.rect = pg.Rect(250, 750, size[0], size[1])
+        image = pg.image.load(image)
+        self.image = pg.transform.scale(
+            image, (size[0], size[1]))
+        self.active_k = True
     def show(self):
-        self.ty -= self.v
+        if self.active:
+            pg.draw.rect(self.screen, self.color_window, (200, 730, 1200, 800), border_radius=self.r)
 
-        rect = pg.Rect(self.x, self.y, 800, 700)
-        pg.draw.rect(self.screen, self.color, rect, border_radius=self.r)
-
-        if self.now_text == "":
             if self.index < len(self.text):
-                self.now_text = self.text[self.index]
-                self.index += 1
-        else:
-            text = self.font.render(self.label[self.index % 2] + ': ' + self.now_text, True, G.WHITE)
-            text_rect = text.get_rect()
-            text_rect.centerx = G.WIDTH // 2
-            text_rect.bottom = self.ty
-            self.screen.blit(text, text_rect)
+                now_text = self.text[self.index]
+                if self.timer/5 < self.typing_speed:
+                    self.now_length += 1
+                    self.timer += 1/G.FPS
+            else:
+                self.active = False
+                now_text = '...'
 
+            if self.now_length > len(now_text):
+                self.now_length = len(now_text)
+
+            if now_text != "":
+                lines = self.wrap(now_text[:self.now_length], 70)
+                y_offset = 0
+                for line in lines:
+                    text = self.font.render(line, True, self.color)
+                    text_rect = text.get_rect()
+                    text_rect.x = self.tx + 200
+                    text_rect.y = self.ty - 20 + y_offset
+                    self.screen.blit(text, text_rect)
+                    y_offset += text_rect.height
+                screen.blit(self.image, self.rect)
+            else:
+                self.index += 1
+                self.now_length = 0
+                if self.index >= len(self.text):
+                    self.active = False
+
+
+    def wrap(self, text, max_length):
+        words = text.split()
+        lines = []
+        now_line = ""
+        for word in words:
+            if len(now_line) + len(word) + 1 <= max_length:
+                now_line += " " + word
+            else:
+                lines.append(now_line.strip())
+                now_line = word
+        if now_line:
+            lines.append(now_line.strip())
+        return lines
+    def update(self, keys):
+        if sum(keys) > 0 :
+            if self.active_k:
+                self.index += 1
+                self.active_k = False
+        else:
+            self.active_k = True
 def separate(file):
-    with open(file, 'r') as file_text:
+    with open(file, 'r', encoding = 'utf-8') as file_text:
         text = file_text.read()
         phrases = text.split('@')
         return [phrase.strip() for phrase in phrases if phrase.strip()]
+
 def start():
+    global signal, index
     #Add function "Enter your name"
-    text = separate('dialogues\dialogue0.txt')
+    d = Dialogue(screen)
+    d.restart(index, tuple(persons[0]))
+    dialogues.append(d)
     but = Button("Start", (600, 400), 30, "navy", screen)
     but.command = but.exit
-    #dialogues.append(Dialogue(screen, text, 'Luna', 'Kitty'))
     #buttons.append(but)
     text = Text("Start", (800, 600), "navy", 30, screen)
     #texts.append(text)
     pan = Panel((800, 450), (30, 40), G.GREEN, screen)
     #panels.append(pan)
-def update(events):
+def update(events, keys):
     screen.fill(G.WHITE)
     #Background(screen).show()
     for p in panels:
@@ -144,4 +198,5 @@ def update(events):
         t.show()
     for d in dialogues:
         d.show()
+        d.update(keys)
     return screen

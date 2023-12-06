@@ -19,7 +19,7 @@ start_position = [(100,680), (length - 200, 680), (1500, 680)]
 
 textures = ["materials/floor.png", 'materials/table3.png', 'materials/board.png', 'materials/firebox.png',
             'materials/door1.png', 'materials/door2.png', 'materials/table2.png', 'materials/plakat.png', 'materials/plak2.png']
-animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit' ]
+animations = ['Animations/luna_go', 'Animations/luna_sit']
 def clear():
     global collisions, objects, areas, sprites,keys
     collisions = []
@@ -52,7 +52,7 @@ def start():
     plak2 = Sc.Sprite(textures[8], (1130, 175), (160, 200))
     ar1 = Sc.Area(5, 215, (40, 410), Sc.change_scene, (5, 1))
     ar2 = Sc.Area(2955, 10, (40, 625), Sc.change_scene, (3, 0))
-    ar3 = Sc.Area(1400, 630, (40, 100), Sc.go_in_btl, (1))
+    ar3 = Sc.Area(1400, 630, (40, 100), Sc.create_animated_object, (Sc.give_list_an(animations[0]), 5, True,  (180, 180), (0, 570), Sc.give_list_an(animations[1]), 10, True, (150, 150), (1100, 580), 4 ))
     areas.append(ar1)
     areas.append(ar2)
     from draw import checkpoints as ch
@@ -99,6 +99,10 @@ def get_scene(keys):
         #i.draw()
         if type(i) == Sc.CheckText:
             i.click(keys)
+        if type(i) == Sc.KinematicBody:
+            i.move()
+            i.draw()
+
     for i in collisions:
         i.draw()
     for i in areas:

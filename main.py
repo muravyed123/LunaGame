@@ -30,5 +30,5 @@ while active:
         sys.exit()
     sc.fill(G.WHITE)
     sc.blit(draw.update(events, keys), (0,0))
-    sc.blit(menu.update(events), (0,0))
+    sc.blit(menu.update(events, keys), (0,0))
     pg.display.update()

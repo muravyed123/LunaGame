@@ -1,2 +1,4 @@
 Hi stranger! What brings you here to me, Luna the cat?@
 Write smth...@
+А че не на русском? Шрифт ариал должен его поддерживать. Еще добавим немного текста чтобы строчки переносились и было видно баги@
+I am your father@

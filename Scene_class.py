@@ -178,7 +178,7 @@ class Sprite(pg.sprite.DirtySprite):
         self.rect = pg.Rect(self.x, self.y, size[0], size[1])
         pg.sprite.Sprite.__init__(self)
 class AnimatedSprite():
-    def __init__(self, images, speed, stop, pos, size = None):
+    def __init__(self, images, speed, flip, stop, pos, size = None):
         self.images = images
         self.image = pg.image.load(images[0])
         self.x = pos[0]
@@ -190,6 +190,7 @@ class AnimatedSprite():
         self.speed = speed
         self.stop = stop
         self.rect = pg.Rect(self.x, self.y, size[0], size[1])
+        self.flip = flip
     def draw(self):
         if self.n != len(self.images ) * self.speed:
             self.image = pg.image.load(self.images[self.n//self.speed])
@@ -198,21 +199,54 @@ class AnimatedSprite():
             self.n += 1
             if self.n == len(self.images) * self.speed and not self.stop:
                 self.n = 0
+            self.image = pg.transform.flip(self.image, self.flip, False)
             change_screen.blit(self.image, self.rect)
         else:
             self.image = pg.image.load(self.images[-1])
             self.image = pg.transform.scale(
-                self.image, (self.size[0], self.size[1]))   
+                self.image, (self.size[0], self.size[1]))
+            self.image = pg.transform.flip(self.image, self.flip, False)
             change_screen.blit(self.image, self.rect)
+    def change_anim(self, images, speed, flip, stop, pos, size = None):
+        self.images = images
+        self.image = pg.image.load(images[0])
+        self.x = pos[0]
+        self.y = pos[1]
+        self.size = [self.image.get_width(), self.image.get_height()]
+        if size != None:
+            self.size = size
+        self.n = 0
+        self.speed = speed
+        self.stop = stop
+        self.rect = pg.Rect(self.x, self.y, size[0], size[1])
+        self.flip = flip
 class KinematicBody():
     def __init__(self, obj, typ, parameters):
         self.obj = obj
         self.typ = typ
         self.p = parameters
+        self.signal = True
+        if typ == 2:
+            obj.rect.x = self.p['start_pos'][0]
+            obj.rect.y = self.p['start_pos'][1]
     def move(self):
         if self.typ == 1:
             self.obj.rect.x += self.p['speed'][0]
             self.obj.rect.y += self.p['speed'][1]
+        elif self.typ == 2:
+            if abs(self.obj.rect.x - self.p['end_pos'][0]) < self.p['speed']:
+                if self.signal:
+                    anim, speed, flip, stop, pos, size =  self.p['parametersforanim']
+                    self.obj.change_anim(anim,  speed, flip, stop, pos, size)
+                    self.signal = False
+            else:
+                vec1 = (self.p['end_pos'][0] - self.p['start_pos'][0])/ abs((self.p['end_pos'][0] - self.p['start_pos'][0]))
+                vec2 = (self.p['end_pos'][1] - self.p['start_pos'][1]) / abs((self.p['end_pos'][0] - self.p['start_pos'][0]))
+                self.obj.rect.x += self.p['speed'] * vec1
+                self.obj.rect.y += self.p['speed'] * vec2
+    def draw(self):
+        self.obj.draw()
+
         
 def change_scene(obj = None, scene = None, param = None):
     number, way = param
@@ -231,6 +265,12 @@ def create_checktext(obj, scene, param):
     cht_n.command = command
     obj.info = len(scene)
     scene.append(cht_n)
+def create_animated_object(obj, scene, param):
+    print(param)
+    animation, speed_of_animation, flip1, size1, start_pos, end_animation, speed_end_animation, flip2, size2, end_pos, speed = param
+    obj = AnimatedSprite(animation, speed_of_animation, flip1, False, start_pos, size1)
+    kinobj = KinematicBody(obj, 2, {'speed' : speed, 'end_pos': end_pos, 'start_pos': start_pos, 'parametersforanim':(end_animation, speed_end_animation, flip2, False, end_pos, size2) })
+    scene.append(kinobj)
 
 def give_list_an(file_name):
     anim = [file_name + '/' + str(x) + '.png' for x in range(1, G.howmanyFiles(file_name) + 1)]
