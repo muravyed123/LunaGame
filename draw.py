@@ -15,6 +15,7 @@ player_active = True
 timer = 0
 now_do = 'nothing'
 scene_number = 0
+need_pos  = (500, 680)
 scene_way = 2
 n = 0
 flip = False
@@ -173,7 +174,7 @@ class BattleScene:
                 surf.fill(G.WHITE)
                 self.me.player.draw()
                 surface.blit(surf, (0, 0))
-                self.me.player.rect.x = self.coords[0] + (self.me.player.x - self.coords[0]) *(self.timer - t_p)
+                self.me.player.rect.x = self.coords[0] + (self.me.player.x - self.coords[0]) *(self.timer - t_p) + 100
                 self.me.player.rect.y = self.coords[1] + (self.me.player.y - self.coords[1]) * (self.timer - t_p)
                 if self.timer >= t_p + 1:
                     now_do = 'nothing'
@@ -182,8 +183,8 @@ class BattleScene:
             screen.blit(surface, (0, 0))
         return (0, 0)   
 
-def change_scene(number, way):
-    global timer, now_do, player_active, scene_number, in_battle, now_scene, scene_way
+def change_scene(number, way, pos = None):
+    global timer, now_do, player_active, scene_number, in_battle, now_scene, scene_way, need_pos
     scene_number = number
     timer = 0
     if now_scene != None and type(now_scene)!= BattleScene:
@@ -191,6 +192,12 @@ def change_scene(number, way):
         player_active = False
         in_battle = False
         timer = 0
+        if pos != None:
+            now_do = 'nothing'
+            player_active = True
+            scene_way = -1
+            need_pos = pos
+            change_scene_final(number)
         scene_way = way
         player.animation = 'stay'
     else:
@@ -213,7 +220,10 @@ def change_scene_final(number):
         camera.x = now_scene.me.length - camera.x + G.WIDTH//2
         player.flip_h = not player.flip_h
     else:
-        player.x, player.y = now_scene.me.start_position[scene_way]
+        if scene_way != -1:
+            player.x, player.y = now_scene.me.start_position[scene_way]
+        else:
+            player.x, player.y = need_pos
     n = 0
     scene_number = 0
 
@@ -253,7 +263,9 @@ def remove_checkpoints(number):
 def change_activity(value):
     global player_active
     player_active = value
-
+def change_checkpoints(ch):
+    global checkpoints
+    checkpoints = ch
 def update(event, keys):
     """
     event: 

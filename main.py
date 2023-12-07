@@ -2,11 +2,13 @@ import pygame as pg
 import sys
 import menu
 import draw
+import json
 import Sound as sound
 
 import globalsc as G
 
-
+can_pause = False
+pause = False
 active = True
  
 clock = pg.time.Clock()
@@ -18,6 +20,30 @@ menu.start()
 draw.change_scene(1, 1)
 pg.display.set_caption('Game')
 #sound.start_play_fon_music(0)
+def save():
+    savefile = {'checkpoints': draw.checkpoints, 'position': (draw.player.x, draw.player.y), 'name': G.name, 'now_scene': draw.now_scene.number}
+
+    with open('save.json', 'w') as file:
+        json.dump(savefile, file)
+def load():
+    with open('save.json', 'r') as json_file:
+        data = json.load(json_file)
+        G.give_name(data['name'])
+        draw.change_checkpoints(data['checkpoints'])
+        draw.change_scene(data['now_scene'], -1,  data['position'])
+        menu.pause(False)
+        menu.loading()
+def clear():
+    G.give_name('')
+    draw.change_checkpoints([False] * len(draw.checkpoints))
+    draw.change_scene(1, 2)
+    menu.pause(False)
+    menu.loading()
+menu.start_menu()
+def unpause():
+    global pause
+    pause = False
+    menu.pause(pause)
 while active:
     clock.tick(G.FPS)
     events = pg.event.get()
@@ -27,8 +53,14 @@ while active:
             
     keys = pg.key.get_pressed()
     if keys[pg.K_ESCAPE]:
-        sys.exit()
+        if can_pause:
+            pause = not pause
+            can_pause = False
+            menu.pause(pause)
+    else:
+        can_pause = True
     sc.fill(G.WHITE)
-    sc.blit(draw.update(events, keys), (0,0))
+    if not pause and menu.now_active:
+        sc.blit(draw.update(events, keys), (0,0))
     sc.blit(menu.update(events, keys), (0,0))
     pg.display.update()

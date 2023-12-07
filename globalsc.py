@@ -30,6 +30,9 @@ def crop_image(file, count_x, count_y, need, path):
 def howmanyFiles(path):
     dirs = os.listdir(path)
     return(len(dirs))
+def give_name(nam):
+    global name
+    name = nam
 def create_dialog(par):
     number, signal, sig_par = par
     from menu import create_dialog
