@@ -9,12 +9,13 @@ buttons = []
 texts = []
 pg.init()
 
-dialogs =[['materials/Lunaface.png', (100, 100), 'dialogues\dialogue0.txt', 'Luna']]
+dialogs =[['materials/Lunaface.png', (100, 100), 'dialogues\dialogue0.txt', 'Luna'], ['materials/ghostface.png', (100, 100), 'dialogues\dialogue1.txt', 'Ciesar']]
 dialogues = []
 index = 0
 
 signal = True
 now_active = True
+can_return = True
 timer = 0
 length = 100
 
@@ -114,6 +115,7 @@ class Dialogue:
         self.tx = G.WIDTH // 2 - 600
         self.ty = G.HEIGHT - 130
         self.active = False
+        self.active_k = True
         self.index = 0
     def restart(self,index,  params, signal, sig_par):
         image, size, path_t, name = params
@@ -149,7 +151,6 @@ class Dialogue:
                 if self.sig_par[-1] == 'delete_last':
                     from draw import now_scene as n
                     n.me.objects[-1].go_back()
-                    print(self.sig_par)
 
                 from draw import change_activity as ch
                 ch(True)
@@ -192,6 +193,7 @@ class Dialogue:
         if sum(keys) > 0 :
             if self.active_k:
                 self.index += 1
+                self.now_length = 0
                 self.active_k = False
         else:
             self.active_k = True
@@ -220,8 +222,9 @@ def create_dialog(number, signal, sig_par):
     from draw import change_activity as ch
     ch(False)
 def pause(need_pause = True):
-    global buttons, texts, panels
+    global buttons, texts, panels, can_return
     if length >= 100:
+        can_return = True
         if need_pause:
             pause(False)
             pan = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
@@ -260,7 +263,9 @@ def settings():
     buttons.append(but1)
     pass
 def start_menu():
+    global can_return
     pause(False)
+    can_return = False
     pan = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
     text1 = Text("Главное меню", (620, 120), "White", 70, screen)
     text2 = Text("M    T", (510, 200), (50, 50, 50), 280, screen)

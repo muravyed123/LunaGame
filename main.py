@@ -53,7 +53,7 @@ while active:
             
     keys = pg.key.get_pressed()
     if keys[pg.K_ESCAPE]:
-        if can_pause:
+        if can_pause and menu.can_return:
             pause = not pause
             can_pause = False
             menu.pause(pause)

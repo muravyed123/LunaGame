@@ -301,38 +301,51 @@ def draw_damage(count):
     timer += 1/G.FPS
     pg.draw.rect(screen, (82, 8, 78), (G.WIDTH//2 - 200, 350, 400 , 40))
     if timer < 0.5:
-        pg.draw.rect(screen, G.GREEN, (G.WIDTH//2 - 200, 350,boss_hp * 4 , 40))
+        pg.draw.rect(screen, G.GREEN, (G.WIDTH//2 - 200, 350,boss_hp * 4 *(100 / boss.scene.hitpoints) , 40))
     elif timer >= 0.5 and timer <= 3:
         if timer >= 2:
             length = (timer - 2) * count * 10
-            pg.draw.rect(screen, G.GREEN, (G.WIDTH//2 - 200, 350,(boss_hp -  length) * 4 , 40))
+            pg.draw.rect(screen, G.GREEN, (G.WIDTH//2 - 200, 350,(boss_hp - length) * 4*(100 / boss.scene.hitpoints) , 40))
         else:
-            pg.draw.rect(screen, G.GREEN, (G.WIDTH//2 - 200, 350, boss_hp * 4 , 40))
+            pg.draw.rect(screen, G.GREEN, (G.WIDTH//2 - 200, 350, boss_hp * 4 *(100 / boss.scene.hitpoints), 40))
         for i in range(count):
             image = pg.image.load('materials/hit.png') 
             size = (100, 100)
             image = pg.transform.scale(image, (size[0], size[1]))
             screen.blit(image, (G.WIDTH//2 - size[0]//2, 120 + i * 20))
-            font = pg.font.SysFont('arial', 70)
-            if count == 0:
-                text1 = '???...'
-            elif count == 1:
-                text1 = 'So weak'
-            elif count == 2:
-                text1 = 'Normal'
-            elif count == 3:
-                text1 = 'Good !'
-            elif count == 4:
-                text1 = 'Nice'
-            elif count == 5:
-                text1 = 'PERFECT'
-            Text = font.render(text1, True, G.RED)  
-            screen.blit(Text, (G.WIDTH//2 - Text.get_width()// 2, 400))
+        font = pg.font.SysFont('arial', 70)
+        if count <= 0:
+            text1 = '???...'
+        elif count == 1:
+            text1 = 'So weak'
+        elif count == 2:
+            text1 = 'Normal'
+        elif count == 3:
+            text1 = 'Good !'
+        elif count == 4:
+            text1 = 'Nice'
+        elif count == 5:
+            text1 = 'PERFECT'
+        Text = font.render(text1, True, G.RED)
+        screen.blit(Text, (G.WIDTH//2 - Text.get_width()// 2, 400))
     elif timer > 3 and timer < 4:
-        pg.draw.rect(screen, G.GREEN, (G.WIDTH//2 - 200, 350, (boss_hp - count * 10) * 4 , 40))
+        pg.draw.rect(screen, G.GREEN, (G.WIDTH//2 - 200, 350, (boss_hp - count * 10) * 4* (100 / boss.scene.hitpoints), 40))
     elif timer >= 4:
         return False
-    return True 
+    return True
+def wrap(text, max_length):
+    words = text.split()
+    lines = []
+    now_line = ""
+    for word in words:
+        if len(now_line) + len(word) + 1 <= max_length:
+            now_line += " " + word
+        else:
+            lines.append(now_line.strip())
+            now_line = word
+    if now_line:
+        lines.append(now_line.strip())
+    return lines
 def draw_text(keys):
     global timer
     if True in keys:
@@ -348,11 +361,19 @@ def draw_text(keys):
             if timer > 3*len(text)/G.FPS + 3:
                 return False            
             text1 = boss.scene.texts[boss.me.stage]
+        y_offset = 0
+        text1 = wrap(text1, 40)
+        font = pg.font.SysFont('arial', 40)
+        for line in text1:
+            text = font.render(line, True, (255, 255, 255))
+            text_rect = text.get_rect()
+            text_rect.x = 450
+            text_rect.y = 500 + y_offset
+            screen.blit(text, text_rect)
+            y_offset += text_rect.height
         timer += 1/G.FPS
-        font = pg.font.SysFont('arial', 30)
-        Text = font.render(text1, True, (255, 255, 255))     
-        screen.blit(Text, (600, 500))
-        Text = font.render('...', True, (255, 255, 255))     
+
+        Text = font.render('...', True, (255, 255, 255))
         screen.blit(Text, (1000, 640))
         return True
 def battle():

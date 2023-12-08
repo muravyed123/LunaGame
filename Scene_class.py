@@ -290,13 +290,25 @@ def create_animated_object(obj, scene, param):
         ch(False)
         from draw import now_scene as n
         del n.me.areas[-1]
+def create_dialog(obj, scene, param):
+    number, signal, parameters, need_stop = param
+    G.create_dialog((number, signal, parameters))
+    if need_stop:
+        from draw import change_activity as ch
+        ch(False)
+        from draw import now_scene as n
+        del n.me.areas[-1]
 
 def give_list_an(file_name):
     anim = [file_name + '/' + str(x) + '.png' for x in range(1, G.howmanyFiles(file_name) + 1)]
     return anim
 def go_in_btl(obj = None, scene = None, number = None):
     from draw import go_in_battle as battle
-    delete_obj(obj, scene, number)
+    if obj != None and scene != None and obj in scene:
+        delete_obj(obj, scene, number)
+    if obj != None and number == None:
+        number = int(obj)
+    print(number)
     battle(number)
 def flip_all(obj, ar, col, sprites, length):
     for i in obj:

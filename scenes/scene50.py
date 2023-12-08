@@ -14,11 +14,11 @@ sprites = {}
 sprite_group = pg.sprite.Group()
 keys = []
 flip = False
-length = 2000
+length = 1700
 
-textures = ["materials/floor.png", 'materials/door2.png', 'materials/door4.png']
+textures = ["materials/floor.png", "materials/washma.png"]
 
-animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
+animations = ['Animations/bl_cat_go', 'materials/ghost.png']
 start_position = [(200, 680), (length -200, 680)]
 def clear():
     global collisions, objects, areas, sprites, keys
@@ -30,31 +30,37 @@ def clear():
     draw_only()
 def start():
     global keys
-    wall = Sc.Figure('rect', (156, 224, 161), (0, 0, 2000, 600, 350))
-    bord = Sc.Figure('rect', (102, 84, 63), (0, 350, 2000, 70, 35))
+    wall = Sc.Figure('rect', (217, 218, 185), (0, 0, 1800, 600, 350))
     start_pos = -138
     leng = 611
     objects.append(wall)
-    objects.append(bord)
     floor1 = Sc.Sprite(textures[0], (start_pos, 582), (864, 350))
     floor2 = Sc.Sprite(textures[0], (start_pos + leng * 1, 582), (864, 350))
     floor3 = Sc.Sprite(textures[0], (start_pos + leng * 2, 582), (864, 350))
     floor4 = Sc.Sprite(textures[0], (start_pos + leng * 3, 582), (864, 350))
-    colis1 = Sc.CollisionShape(-80, 160, (85, 625))
-    ar1 = Sc.Area(1915, 65, (40, 625), Sc.change_scene, (5, 0))  
-    ar3 = Sc.Area(1070, 330, (40, 400), Sc.create_checktext, ('Подозрительно выглядящая дверь. (Е) - войти', (700, 300), G.BLACK, 50, pg.K_e, Sc.change_scene, (50, 0)), Sc.delete_obj)
-    door1 = Sc.Sprite(textures[1], (830, -60), (565, 710))
-    door2 = Sc.Sprite(textures[2], (1450, 20), (335, 605))
-    door3 = Sc.Sprite(textures[2], (210, 20), (335, 605))
+    colis1 = Sc.CollisionShape(1420, 160, (85, 625))
+    ar1 = Sc.Area(0, 65, (40, 625), Sc.change_scene, (7, 2))
+    ar3 = Sc.Area(560, 630, (40, 100), Sc.create_animated_object, (
+    [animations[1]], 5, False, (180, 180), (1700, 580), [animations[1]], 10, True, (150, 150),
+    (600, 580), 15, Sc.go_in_btl, (2), False))
+    areas.append(ar1)
+    ar4 = Sc.Area(200, 630, (40, 100),Sc.create_dialog,(1, G.remove_checkpoint, (2, 'nothing'), True))
+    from draw import checkpoints as ch
+    if not ch[1] and ch[0]:
+        areas.append(ar3)
+    if not ch[2] and ch[1]:
+        areas.append(ar4)
+    areas.append(ar4)
+    wash1 = Sc.Sprite(textures[1], (965, 165), (565, 555))
+    wash2 = Sc.Sprite(textures[1], (480, 165), (550, 560))
+    wash3 = Sc.Sprite(textures[1], (15, 165), (550, 545))
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2
     sprites['floor3'] = floor3
-    sprites['floor4'] = floor4
-    sprites['door1'] = door1
-    sprites['door2'] = door2
-    sprites['door3'] = door3
-    areas.append(ar1)
-    areas.append(ar3)
+    #sprites['floor4'] = floor4
+    sprites['wash1'] = wash1
+    sprites['wash2'] = wash2
+    sprites['wash3'] = wash3
     collisions.append(colis1)
     keys = list(sprites.keys())
     draw_only()
@@ -76,6 +82,11 @@ def get_scene(keys):
         if type(i) == Sc.CheckText:
             i.click(keys)
             i.draw()
+        if type(i) == Sc.KinematicBody:
+            i.move()
+            i.draw()
+            if i.die:
+                del objects[objects.index(i)]
     for i in collisions:
         i.draw()
     for i in areas:
@@ -94,6 +105,9 @@ def update(player, pl, vel):
             vel[1] = 0
     for i in areas:
         res, signal, param = i.is_collide(r3)
-        if signal != None:
-            signal(i, objects, param)
+        if signal != None and signal != True:
+            if signal == G.create_dialog:
+                signal(param)
+            else:
+                signal(i, objects, param)
     return vel

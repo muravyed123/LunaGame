@@ -19,7 +19,7 @@ need_pos  = (500, 680)
 scene_way = 2
 n = 0
 flip = False
-checkpoints = [False, True]
+checkpoints = [False, False, False]
 
 
 class Camera:

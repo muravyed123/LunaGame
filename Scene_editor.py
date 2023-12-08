@@ -9,9 +9,9 @@ import Scene_class as Sc
 object_move = False
 now_object = None
 now_key = ''
-coords = (0,0)
+coords = (0, 0)
 speed = 10
-number = 3
+number = 50
 scene = importlib.import_module(f'scenes.scene{number}')
 active = True
 
