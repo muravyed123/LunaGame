@@ -63,7 +63,7 @@ class CollisionShape():
         else:
             return(y2)
     def draw(self):
-        pg.draw.rect(screen, G.BLUE, self.rect)    
+        #pg.draw.rect(screen, G.BLUE, self.rect)
         return(screen)
 class Figure():
     def __init__(self, fig, color, parameters,x = 0, y = 0):
@@ -130,7 +130,8 @@ class Area():
         self.size = tuple(size)
         self.rect = pg.Rect((self.x, self.y, self.size[0], self.size[1]))
     def draw(self):
-        pg.draw.rect(screen, G.GREEN, self.rect)    
+        #pg.draw.rect(screen, G.GREEN, self.rect)
+        pass
 class PlayLabel():
     def __init__(self, text,  pos, color, font):
         self.x, self.y = pos
@@ -298,7 +299,14 @@ def create_dialog(obj, scene, param):
         ch(False)
         from draw import now_scene as n
         del n.me.areas[-1]
-
+def delete_area_obj(obj, scene, name):
+    name, numb = name
+    from draw import now_scene as n
+    del n.me.areas[-1]
+    del n.me.keys[n.me.keys.index(name)]
+    n.me.draw_only()
+    G.remove_checkpoint(numb)
+    pass
 def give_list_an(file_name):
     anim = [file_name + '/' + str(x) + '.png' for x in range(1, G.howmanyFiles(file_name) + 1)]
     return anim

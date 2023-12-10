@@ -19,7 +19,7 @@ need_pos  = (500, 680)
 scene_way = 2
 n = 0
 flip = False
-checkpoints = [False, False, False]
+checkpoints = [False, False, False, False, False, False, False, False]
 
 
 class Camera:
@@ -153,6 +153,7 @@ class BattleScene:
         self.me = Bscene
         self.me.start(number, last_scene)
         self.coords = [player.x - camera.x + camera.width//2, player.y]
+        change_music(self.me.boss.scene.music)
         self.me.player.rect.x = self.coords[0]
         self.me.player.rect.y = self.coords[1]
         self.timer = 0
@@ -214,6 +215,7 @@ def change_scene_final(number):
     ex = exit_pr
     now_scene = Scene(number, player, camera)
     player.is_on_floor = False
+    change_music(0)
     if flip:
         flip = False
         player.x = now_scene.me.length - player.x- player.rect.width
@@ -237,7 +239,8 @@ def go_in_battle(number):
     now_do = 'st_b_an'
 
 def lose():
-    ex()
+    from menu import create_end_menu as cr
+    cr()
 def animate_black():
     global timer, player_active, now_do, last_scene
     timer += 1/ G.FPS
@@ -266,6 +269,11 @@ def change_activity(value):
 def change_checkpoints(ch):
     global checkpoints
     checkpoints = ch
+def change_music(number):
+    if str(number) == 'now':
+        number = 0
+    from Sound import start_play_fon_music as start
+    start(number, -1)
 def update(event, keys):
     """
     event: 

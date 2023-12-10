@@ -48,7 +48,7 @@ def start():
 
     ar1 = Sc.Area(2945, 215, (40, 410), Sc.change_scene, (1, 0))
     ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (7, 1))
-    ar3 = Sc.Area(1770, 335, (190, 410), Sc.create_checktext, ('press [R] to go upstairs',
+    ar3 = Sc.Area(1770, 335, (190, 410), Sc.create_checktext, ('Нажмите R чтобы подняться по ступеням',
                                                                (1800, 400), G.BLACK, 50, pg.K_r, Sc.change_scene,
                                                                (13, 2)), Sc.delete_obj)
     door1 = Sc.Sprite(textures[2], (870, 0), (340, 630))

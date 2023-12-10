@@ -11,7 +11,7 @@ now_object = None
 now_key = ''
 coords = (0, 0)
 speed = 10
-number = 50
+number = 53
 scene = importlib.import_module(f'scenes.scene{number}')
 active = True
 

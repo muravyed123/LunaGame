@@ -19,7 +19,7 @@ length = 2000
 textures = ["materials/floor.png", 'materials/door2.png', 'materials/door4.png']
 
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
-start_position = [(200, 680), (length -200, 680)]
+start_position = [(200, 680), (length - 200, 680), (200, 680)]
 def clear():
     global collisions, objects, areas, sprites, keys
     collisions = []
@@ -41,8 +41,8 @@ def start():
     floor3 = Sc.Sprite(textures[0], (start_pos + leng * 2, 582), (864, 350))
     floor4 = Sc.Sprite(textures[0], (start_pos + leng * 3, 582), (864, 350))
     colis1 = Sc.CollisionShape(-80, 160, (85, 625))
-    ar1 = Sc.Area(1915, 65, (40, 625), Sc.change_scene, (5, 0))  
-    ar3 = Sc.Area(1070, 330, (40, 400), Sc.create_checktext, ('Подозрительно выглядящая дверь. (Е) - войти', (700, 300), G.BLACK, 50, pg.K_e, Sc.change_scene, (50, 0)), Sc.delete_obj)
+    ar1 = Sc.Area(1915, 65, (40, 625), Sc.change_scene, (5, 0))
+    ar3 = Sc.Area(370, 330, (40, 400), Sc.create_checktext, ('Подозрительно выглядящая дверь. (Е) - войти', (100, 300), G.BLACK, 50, pg.K_e, Sc.change_scene, (50, 0)), Sc.delete_obj)
     door1 = Sc.Sprite(textures[1], (830, -60), (565, 710))
     door2 = Sc.Sprite(textures[2], (1450, 20), (335, 605))
     door3 = Sc.Sprite(textures[2], (210, 20), (335, 605))

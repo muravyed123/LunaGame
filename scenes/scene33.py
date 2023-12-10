@@ -46,10 +46,10 @@ def start():
     floor5 = Sc.Sprite(textures[0], (start_pos + leng * 4, 582), (864, 350))
     stairs = Sc.Sprite(textures[5], (770, -20), (535, 630))
     ar1 = Sc.Area(1075, 335, (170, 410), Sc.create_checktext,
-                  ('press [T] to go downstairs', (1200, 400), G.BLACK, 50, pg.K_t, Sc.change_scene, (23, 2)),
+                  ('Нажмите Т чтобы спуститься по ступеням', (1200, 400), G.BLACK, 50, pg.K_t, Sc.change_scene, (23, 2)),
                   Sc.delete_obj)
     ar4 = Sc.Area(1060, 335, (200, 410), Sc.create_checktext,
-                  ('press [R] to go upstairs', (1200, 300), G.BLACK, 50, pg.K_r, Sc.change_scene, (43, 2)),
+                  ('Нажмите R чтобы подняться по ступеням', (1200, 300), G.BLACK, 50, pg.K_r, Sc.change_scene, (43, 2)),
                   Sc.delete_obj)
     ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (37, 1))
     ar3 = Sc.Area(2930, 65, (40, 625), Sc.change_scene, (29, 0))

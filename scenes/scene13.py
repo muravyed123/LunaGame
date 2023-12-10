@@ -45,11 +45,26 @@ def start():
     floor5 = Sc.Sprite(textures[0], (start_pos + leng * 4, 582), (864, 350))
     stairs = Sc.Sprite(textures[5], (770, -20), (535, 630))
     ar1 = Sc.Area(1075, 335, (170, 410), Sc.create_checktext,
-                  ('press [T] to go downstairs', (1200, 400), G.BLACK, 50, pg.K_t, Sc.change_scene, (5, 2)),
+                  ('Нажмите Т чтобы спуститься по ступеням', (1200, 400), G.BLACK, 50, pg.K_t, Sc.change_scene, (5, 2)),
                   Sc.delete_obj)
     ar4 = Sc.Area(1060, 335, (200, 410), Sc.create_checktext,
-                  ('press [R] to go upstairs', (1200, 300), G.BLACK, 50, pg.K_r, Sc.change_scene, (23, 2)),
+                  ('Нажмите R чтобы подняться по ступеням', (1200, 300), G.BLACK, 50, pg.K_r, Sc.change_scene, (23, 2)),
                   Sc.delete_obj)
+    from draw import checkpoints as ch
+    ar5 = None
+    if ch[6] and not ch[7]:
+        ar4 = Sc.Area(1060, 335, (200, 410), Sc.create_checktext,
+                      ('Нажмите R чтобы подняться по ступеням', (1200, 300), G.BLACK, 50, pg.K_r, Sc.change_scene, (53, 2)),
+                      Sc.delete_obj)
+    if ch[3] and not ch[5]:
+        if not ch[4]:
+            ar5 = Sc.Area(1800, 335, (200, 410), Sc.create_checktext,
+                          ('Комната у лестницы, закрыто на ключ, попробуй поискать где-то на этаже', (1600, 300), G.BLACK, 50, pg.K_F1, Sc.change_scene, (52, 1)),
+                          Sc.delete_obj)
+        else:
+            ar5 = Sc.Area(1800, 335, (200, 410), Sc.create_checktext,
+                          ('Комната у лестницы, открыто(Нажми Е)', (1600, 300), G.BLACK, 50, pg.K_e, Sc.go_in_btl, (4)),
+                          Sc.delete_obj)
     ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (17, 1))
     ar3 = Sc.Area(2930, 65, (40, 625), Sc.change_scene, (9, 0))
     door1 = Sc.Sprite(textures[3], (1710, 35), (345, 570))
@@ -68,6 +83,8 @@ def start():
     areas.append(ar2)
     areas.append(ar3)
     areas.append(ar1)
+    if ar5 != None:
+        areas.append(ar5)
     keys = list(sprites.keys())
     draw_only()
 def draw_only():

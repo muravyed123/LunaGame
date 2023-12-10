@@ -39,7 +39,7 @@ def start():
     objects.append(wall)
     objects.append(bord)
     objects.append(wall2)
-    label = Sc.PlayLabel('4 ЭТАЖ', (1180, 50), (100, 0, 0), 50)
+    label = Sc.PlayLabel('5 ЭТАЖ', (1180, 50), (100, 0, 0), 50)
     objects.append(label)
     floor1 = Sc.Sprite(textures[0], (start_pos, 582), (864, 350))
     floor2 = Sc.Sprite(textures[0], (start_pos + leng * 1, 582), (864, 350))
@@ -48,7 +48,7 @@ def start():
     floor5 = Sc.Sprite(textures[0], (start_pos + leng * 4, 582), (864, 350))
     stairs = Sc.Sprite(textures[5], (1395, -20), (535, 630))
     ar1 = Sc.Area(1455, 335, (160, 410), Sc.create_checktext,
-                  ('press [T] to go downstairs', (1500, 400), G.BLACK, 50, pg.K_t, Sc.change_scene, (31, 2)),
+                  ('Нажмите Т чтобы спуститься по ступеням', (1500, 400), G.BLACK, 50, pg.K_t, Sc.change_scene, (31, 2)),
                   Sc.delete_obj)
     ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (39, 1))
     ar3 = Sc.Area(2930, 65, (40, 625), Sc.change_scene, (45, 0))

@@ -49,7 +49,7 @@ def start():
     box = Sc.Sprite(textures[4], (2745, 55), (310, 750))
     emerg = Sc.Sprite(textures[5], (2400, 95), (115, 95))
     colis1 = Sc.CollisionShape(2800, 160, (85, 625))
-    ar1 = Sc.Area(2105, 335, (190, 410), Sc.create_checktext, ('press [R] to go upstairs',
+    ar1 = Sc.Area(2105, 335, (190, 410), Sc.create_checktext, ('Нажмите R чтобы подняться по ступеням',
                                                                (2000, 400), G.BLACK, 50, pg.K_r, Sc.change_scene, (11, 2)), Sc.delete_obj)
     ar2 = Sc.Area(10, 65, (40, 625), Sc.change_scene, (1, 1))
     sprites['floor1'] = floor1

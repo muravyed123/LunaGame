@@ -17,7 +17,8 @@ flip = False
 length = 3000
 
 textures = ["materials/floor.png", 'materials/door2.png', 'materials/door3.png', 'materials/door5.png',
-            'materials/door6.png', 'materials/door7.png', 'materials/door8.png', 'materials/toilet.png']
+            'materials/door6.png', 'materials/door7.png', 'materials/door8.png', 'materials/toilet.png',
+            'materials/thesafe.png']
 
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
 start_position = [(200, 680), (length -200, 680)]
@@ -48,7 +49,24 @@ def start():
     door1 = Sc.Sprite(textures[6], (1645, 55), (340, 555))
     door2 = Sc.Sprite(textures[1], (2275, -25), (560, 680))
     door3 = Sc.Sprite(textures[5], (875, 50), (335, 560))
-
+    safe = Sc.Sprite(textures[8], (620, 60), (215, 565))
+    ar5 = None
+    from draw import checkpoints as ch
+    if not ch[5]:
+        ar5 = Sc.Area(630, 300, (200, 410), Sc.create_checktext,
+                      ('От сейфа требуется код, который пока неизвестен', (400, 300),
+                       G.BLACK, 50, pg.K_F1, Sc.change_scene, (52, 1)),
+                      Sc.delete_obj)
+    else:
+        if not ch[6]:
+            ar5 = Sc.Area(630, 300, (200, 410), Sc.create_checktext,
+                          ('Сейф (можно открыть на Е).', (400, 300), G.BLACK, 50, pg.K_e, G.menu_text, (6, 'Получен загадочный камень')),
+                          Sc.delete_obj)
+        else:
+            ar5 = Sc.Area(630, 300, (200, 410), Sc.create_checktext,
+                          ('Сейф пуст', (400, 300),
+                           G.BLACK, 50, pg.K_F1, Sc.change_scene, (52, 1)),
+                          Sc.delete_obj)
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2
     sprites['floor3'] = floor3
@@ -58,8 +76,11 @@ def start():
     sprites['door2'] = door2
     sprites['door3'] = door3
     sprites['toilet'] = toilet
+    sprites['safe'] = safe
     areas.append(ar2)
     collisions.append(colis1)
+    if ar5 != None:
+        areas.append(ar5)
     keys = list(sprites.keys())
     draw_only()
 def draw_only():

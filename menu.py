@@ -9,9 +9,10 @@ buttons = []
 texts = []
 pg.init()
 
-dialogs =[['materials/Lunaface.png', (100, 100), 'dialogues\dialogue0.txt', 'Luna'], ['materials/ghostface.png', (100, 100), 'dialogues\dialogue1.txt', 'Ciesar']]
+dialogs =[['materials/Lunaface.png', (100, 100), 'dialogues\dialogue0.txt', 'Luna'], ['materials/ghostface.png', (100, 100), 'dialogues\dialogue1.txt', 'Ciesar'], ['materials/Lunaface.png', (100, 100), 'dialogues\dialogue2.txt', 'Luna']]
 dialogues = []
 index = 0
+end = False
 
 signal = True
 now_active = True
@@ -84,9 +85,15 @@ class Text:
         self.color = color
         self.text = text
         self.screen = screen
+        self.die = -1
+        self.timer = 0
     def show(self):
         text = self.font.render(self.text, True, self.color)
         screen.blit(text, (self.x, self.y))
+        if self.die != -1:
+            self.timer += 1/ G.FPS
+            if self.timer >= self.die:
+                del texts[texts.index(self)]
 class Panel:
     def __init__(self,   pos, size,  color, screen):
         self.x, self.y = pos
@@ -197,6 +204,84 @@ class Dialogue:
                 self.active_k = False
         else:
             self.active_k = True
+class End_menu():
+    def __init__(self):
+        self.texts = ["Спасибо за игру! В данный момент это всего лишь демоверсия, но возможно будет продолжение. Все зависит от мотивации создателей",
+                      "Разработчики - Екатерина Долгова,  Краев Алексей",
+                      "За идею спасибо Веревкину Егору!",
+                      "Игра выполнена по заказу ООО МИПТ",
+                      "Надеюсь, вам понравилось)", '', '']
+        self.timer = 0
+        self.font = pg.font.SysFont('times new roman', 50)
+        self.sx = 0
+        self.sy = 0
+        self.need_spawn = True
+    def show(self):
+        if self.timer < 35:
+            text = self.texts[int(self.timer // 5)]
+            lines = self.wrap(text, 35)
+            y_offset = 0
+
+            for line in lines:
+                text = self.font.render(line, True, (235,235,235))
+                text_rect = text.get_rect()
+                text_rect.x = G.WIDTH // 2 - 400
+                text_rect.y = G.HEIGHT // 2 - 20 + y_offset
+                screen.blit(text, text_rect)
+                y_offset += text_rect.height
+        star1 = pg.image.load('materials/star.png')
+        star1 = pg.transform.scale(star1, (100, 100))
+        star2 = pg.image.load('materials/star.png')
+        star2 = pg.transform.scale(star2, (100, 100))
+        cat = pg.image.load('Animations/wh_cat_stay/1.png')
+        cat = pg.transform.scale(cat, (80, 80))
+        star3 = pg.image.load('materials/star.png')
+        star3 = pg.transform.scale(star3, (100, 100))
+        if self.timer >= 5:
+            if self.need_spawn:
+                import random
+                self.sx = random.randint(500, G.WIDTH)
+                self.sy = 0
+                self.need_spawn = False
+            self.sy += 10
+            self.sx -= 5
+            if self.sy > G.HEIGHT or self.sx < 0:
+                self.need_spawn = True
+            screen.blit(star3, (self.sx, self.sy))
+        import math
+        screen.blit(star1,(400 + math.cos(self.timer + 3.14/2) * 400, 400 + math.sin(self.timer+ 3.14/2) * 400))
+        screen.blit(star2, (800 + math.cos(self.timer * 1.2) * 400, 400 + math.sin(self.timer) * 400))
+        screen.blit(cat, (800 + math.cos(self.timer * 1.2) * 400, 380 + math.sin(self.timer) * 400))
+        from Scene_class import give_list_an as give
+
+        textures = give('Animations/luna_go')
+
+        if self.timer >= 10 and self.timer < 20:
+            texture = textures[int(((self.timer - 10)* 10)% len(textures))]
+            Luna = pg.image.load(texture)
+            Luna = pg.transform.scale(Luna, (200,200))
+            screen.blit(Luna, (1700 - (self.timer - 10) * 200, 700))
+        self.timer += 1/G.FPS
+        if self.timer > 118:
+            self.die()
+    def wrap(self, text, max_length):
+        words = text.split()
+        lines = []
+        now_line = ""
+        for word in words:
+            if len(now_line) + len(word) + 1 <= max_length:
+                now_line += " " + word
+            else:
+                lines.append(now_line.strip())
+                now_line = word
+        if now_line:
+            lines.append(now_line.strip())
+        return lines
+    def die(self):
+        global end
+        end = False
+        start_menu()
+
 def separate(file):
     with open(file, 'r', encoding = 'utf-8') as file_text:
         text = file_text.read()
@@ -262,6 +347,10 @@ def settings():
     texts.append(text2)
     buttons.append(but1)
     pass
+def create_text(text, time):
+    j = Text(text, (400, 800), 'Black', 70, screen )
+    texts.append(j)
+    j.die = time
 def start_menu():
     global can_return
     pause(False)
@@ -291,10 +380,28 @@ def start_menu():
     buttons.append(but2)
     buttons.append(but3)
     loading()
+def create_lose_menu():
+    pause(False)
+    pan = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
+    text1 = Text("Увы, но жизнь хрупка", (620, 120), "Red", 70, screen)
+    but1 = Button("Выйти в меню", (500, 750), ((G.WIDTH - 1000), 50), 30, (255, 255, 255), screen)
+    but1.command = start_menu
+    panels.append(pan)
+    texts.append(text1)
+    buttons.append(but1)
+def create_end_menu():
+    global end
+    end = End_menu()
+    pause(False)
+    pan = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
+    panels.append(pan)
+
 def loading():
     pan  = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
     panels.append(pan)
     global timer, length, now_active
+    from draw import change_music as change
+    change('nothing')
     now_active = False
     timer = 0
     length = 0
@@ -305,15 +412,18 @@ def update(events, keys):
     if length >= 100:
         for p in panels:
             p.show()
-        for b in buttons:
-            b.show()
-            for ev in events:
-                b.click(ev)
-        for t in texts:
-            t.show()
-        for d in dialogues:
-            d.show()
-            d.update(keys)
+        if not end:
+            for b in buttons:
+                b.show()
+                for ev in events:
+                    b.click(ev)
+            for t in texts:
+                t.show()
+            for d in dialogues:
+                d.show()
+                d.update(keys)
+        else:
+            end.show()
     else:
         panels[-1].show()
         if timer <= 2:
@@ -329,4 +439,10 @@ def update(events, keys):
         if length >= 100:
             panels.pop()
             now_active = True
+            if not can_return:
+                from draw import change_music as change
+                change(1)
+            else:
+                from draw import change_music as change
+                change('now')
     return screen

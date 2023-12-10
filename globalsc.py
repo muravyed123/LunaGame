@@ -15,6 +15,7 @@ GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 WIDTH , HEIGHT = pg.display.set_mode((0,0), pg.FULLSCREEN).get_size()
 name = 'Kitty'
+password = 457
 level = 1
 def crop_image(file, count_x, count_y, need, path):
     im = Image.open(file)    
@@ -26,13 +27,29 @@ def crop_image(file, count_x, count_y, need, path):
             if number in need:
                 n_path = path + str(number - need[0] + 1) + '.png'
                 im_crop.save(n_path)
-#crop_image('materials/Lunago2.png', 3, 3, [x + 1 for x in range(8)], 'Animations/luna_go/')
+#crop_image('materials/fire.png', 5, 3, [x + 1 for x in range(15)], 'Animations/fire/')
 def howmanyFiles(path):
     dirs = os.listdir(path)
     return(len(dirs))
 def give_name(nam):
     global name
     name = nam
+def menu_text(obj, scene, par):
+    number, text = par
+    from draw import checkpoints as ch
+    if not ch[number]:
+        from menu import create_text
+        create_text(text, 2)
+        remove_checkpoint(number)
+        from draw import now_scene as n
+        n.me.clear()
+        n.me.start()
+
+def end_game(p):
+    from Sound import start_play_fon_music as start
+    start(5, -1)
+    from menu import create_end_menu as cr
+    cr()
 def create_dialog(par):
     number, signal, sig_par = par
     from menu import create_dialog

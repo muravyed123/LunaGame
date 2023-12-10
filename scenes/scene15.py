@@ -17,7 +17,7 @@ flip = False
 length = 3000
 
 textures = ["materials/floor.png", 'materials/door2.png', 'materials/door3.png', 'materials/door5.png',
-            'materials/door6.png', 'materials/door7.png', 'materials/door8.png']
+            'materials/door6.png', 'materials/door7.png', 'materials/door8.png', 'materials/key.png']
 
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
 start_position = [(200, 680), (length -200, 680)]
@@ -59,6 +59,12 @@ def start():
     sprites['door3'] = door3
     sprites['door4'] = door4
     areas.append(ar2)
+    from draw import checkpoints as ch
+    if not ch[4]:
+        key = Sc.Sprite(textures[7], (895, 625), (80, 80))
+        sprites['key'] = key
+        ar3 = Sc.Area(890, 640, (40, 80), Sc.delete_area_obj, ('key', 4))
+        areas.append(ar3)
     collisions.append(colis1)
     keys = list(sprites.keys())
     draw_only()

@@ -19,7 +19,7 @@ def exit_pr():
 menu.start()
 draw.change_scene(1, 1)
 pg.display.set_caption('Game')
-#sound.start_play_fon_music(0)
+sound.start_play_fon_music(1, -1)
 def save():
     savefile = {'checkpoints': draw.checkpoints, 'position': (draw.player.x, draw.player.y), 'name': G.name, 'now_scene': draw.now_scene.number}
 
@@ -30,13 +30,14 @@ def load():
         data = json.load(json_file)
         G.give_name(data['name'])
         draw.change_checkpoints(data['checkpoints'])
+        print(data['checkpoints'])
         draw.change_scene(data['now_scene'], -1,  data['position'])
         menu.pause(False)
         menu.loading()
 def clear():
     G.give_name('')
-    draw.change_checkpoints([False] * len(draw.checkpoints))
-    draw.change_scene(1, 2)
+    draw.change_checkpoints([False]*8)
+    #draw.change_scene(1, 2)
     menu.pause(False)
     menu.loading()
 menu.start_menu()

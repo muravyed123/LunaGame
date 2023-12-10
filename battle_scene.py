@@ -511,6 +511,8 @@ def get_scene(keys):
                 now_score = 0
                 if boss_hp <= 0:
                     now_spawn = 'die'
+                    from draw import change_music as change
+                    change('nothing')
                     boss.can_move = False
                     boss.me.timer = 0
                 else:

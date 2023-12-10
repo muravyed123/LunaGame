@@ -19,7 +19,7 @@ length = 3000
 textures = ["materials/floor.png", 'materials/kitchen.png', 'materials/door3.png', 'materials/firebox.png',
             'materials/box2.png', 'materials/evacuation.png', 'materials/window.png']
 animations = ['Animations/bl_cat_go', 'Animations/bl_cat_sit']
-start_position = [(200, 680), (length -200, 680)]
+start_position = [(200, 680), (length -200, 680), (1000, 680)]
 def clear():
     global collisions, objects, areas, sprites, keys
     collisions = []
@@ -49,6 +49,9 @@ def start():
     box = Sc.Sprite(textures[3], (835, 215), (200, 185))
     box2 = Sc.Sprite(textures[4], (2745, 55), (310, 750))
     ar2 = Sc.Area(55, 65, (40, 625), Sc.change_scene, (2, 0))
+    ar3 = Sc.Area(1900, 330, (100, 400), Sc.create_checktext, (
+    'Войти на кухню - Е', (1000, 300), G.BLACK, 51, pg.K_e, Sc.change_scene, (51, 0)),
+                 Sc.delete_obj)
     sprites['floor1'] = floor1
     sprites['floor2'] = floor2
     sprites['floor3'] = floor3
@@ -61,7 +64,7 @@ def start():
     sprites['kitchen'] = kitchen
     sprites['window'] = window
     collisions.append(colis1)
-    #areas.append(ar1)
+    areas.append(ar3)
     areas.append(ar2)
     if flip:
         Sc.flip_all(objects, areas, collisions,sprites, length)
@@ -85,9 +88,9 @@ def get_scene(keys):
     change_screen = Sc.change_screen
     change_screen.fill(G.WHITE)
     for i in objects:
-        #i.draw()
         if type(i) == Sc.CheckText:
             i.click(keys)
+            i.draw()
     for i in collisions:
         i.draw()
     for i in areas:
