@@ -46,7 +46,7 @@ pg.font.init()
         objects, areas, collisions = Sc.flip_all(objects, areas, collisions, length)
     """
 class CollisionShape():
-    def __init__(self, x , y, size):
+    def __init__(self, x, y, size):
         self.x = x
         self.y = y
         self.rect = pg.Rect((x, y, size[0], size[1]))
@@ -66,7 +66,7 @@ class CollisionShape():
         #pg.draw.rect(screen, G.BLUE, self.rect)
         return(screen)
 class Figure():
-    def __init__(self, fig, color, parameters,x = 0, y = 0):
+    def __init__(self, fig, color, parameters, x=0, y=0):
         self.fig = fig
         self.x = parameters[0]
         self.y = parameters[1]
@@ -81,7 +81,7 @@ class Figure():
         elif self.fig == 'polygon':
             pg.draw.polygon(screen, self.color, self.parameters)
 class Area():
-    def __init__(self, x , y, size, signal, p1 = None, signal_ex = None, p2 = None):
+    def __init__(self, x, y, size, signal, p1=None, signal_ex=None, p2=None):
         self.x = x
         self.y = y
         self.size = tuple(size)
@@ -185,7 +185,7 @@ class AnimatedSprite():
         self.x = pos[0]
         self.y = pos[1]
         self.size = [self.image.get_width(), self.image.get_height()]
-        if size!= None:
+        if size != None:
             self.size = size
         self.n = 0
         self.speed = speed
@@ -208,7 +208,7 @@ class AnimatedSprite():
                 self.image, (self.size[0], self.size[1]))
             self.image = pg.transform.flip(self.image, self.flip, False)
             change_screen.blit(self.image, self.rect)
-    def change_anim(self, images, speed, flip, stop, pos, size = None):
+    def change_anim(self, images, speed, flip, stop, pos, size=None):
         self.images = images
         self.image = pg.image.load(images[0])
         self.x = pos[0]
@@ -264,7 +264,7 @@ class KinematicBody():
 
 
         
-def change_scene(obj = None, scene = None, param = None):
+def change_scene(obj=None, scene=None, param=None):
     number, way = param
     from draw import change_scene as change
     change(number, way)
@@ -310,7 +310,7 @@ def delete_area_obj(obj, scene, name):
 def give_list_an(file_name):
     anim = [file_name + '/' + str(x) + '.png' for x in range(1, G.howmanyFiles(file_name) + 1)]
     return anim
-def go_in_btl(obj = None, scene = None, number = None):
+def go_in_btl(obj=None, scene=None, number=None):
     from draw import go_in_battle as battle
     if obj != None and scene != None and obj in scene:
         delete_obj(obj, scene, number)
@@ -331,10 +331,10 @@ def flip_all(obj, ar, col, sprites, length):
                     new_param.append((length -i.parameters[j][0],  i.parameters[j][1]))
                 i.parameters = tuple(new_param)
     for i in ar:
-        i.x = length - i.x  - i.rect.width
+        i.x = length - i.x - i.rect.width
         i.change_size(i.size)
     for i in col:
-        i.x = length - i.x  - i.rect.width
+        i.x = length - i.x - i.rect.width
         i.change_size(i.size)
     for i in sprites.values():
         i.x = length - i.x - i.rect.width

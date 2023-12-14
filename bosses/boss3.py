@@ -49,6 +49,10 @@ def init_attack():
                      ]
 
                     ]
+def clear():
+    global hitpoints, draw_attacks
+    hitpoints = 200
+    draw_attacks = []
 def wrap(text, max_length):
     words = text.split()
     lines = []

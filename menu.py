@@ -124,7 +124,7 @@ class Dialogue:
         self.active = False
         self.active_k = True
         self.index = 0
-    def restart(self,index,  params, signal, sig_par):
+    def restart(self, index, params, signal, sig_par):
         image, size, path_t, name = params
         self.signal = signal
         self.label = [name, G.name]
@@ -210,7 +210,7 @@ class End_menu():
                       "Разработчики - Екатерина Долгова,  Краев Алексей",
                       "За идею спасибо Веревкину Егору!",
                       "Игра выполнена по заказу ООО МИПТ",
-                      "Надеюсь, вам понравилось)", '', '']
+                      "Надеюсь, вам понравилось)", '', 'Надеюсь это прочитаю не только я)']
         self.timer = 0
         self.font = pg.font.SysFont('times new roman', 50)
         self.sx = 0
@@ -282,12 +282,15 @@ class End_menu():
         end = False
         start_menu()
 
+
 def separate(file):
     with open(file, 'r', encoding = 'utf-8') as file_text:
         text = file_text.read()
         phrases = text.split('@')
         return [phrase.strip() for phrase in phrases if phrase.strip()]
 panload = Panel((500, 400), (length* 5, 50), G.GREEN, screen)
+
+
 def start():
     global signal, index
     panload.screen = screen
@@ -302,11 +305,15 @@ def start():
     #texts.append(text)
     pan = Panel((800, 450), (30, 40), G.GREEN, screen)
     #panels.append(pan)
+
+
 def create_dialog(number, signal, sig_par):
     dialogues[0].restart(index, tuple(dialogs[number]), signal, sig_par)
     from draw import change_activity as ch
     ch(False)
-def pause(need_pause = True):
+
+
+def pause(need_pause=True):
     global buttons, texts, panels, can_return
     if length >= 100:
         can_return = True
@@ -335,6 +342,8 @@ def pause(need_pause = True):
             panels = []
             buttons = []
             texts = []
+
+
 def settings():
     pause(False)
     pan = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
@@ -347,10 +356,14 @@ def settings():
     texts.append(text2)
     buttons.append(but1)
     pass
+
+
 def create_text(text, time):
     j = Text(text, (400, 800), 'Black', 70, screen )
     texts.append(j)
     j.die = time
+
+
 def start_menu():
     global can_return
     pause(False)
@@ -380,6 +393,8 @@ def start_menu():
     buttons.append(but2)
     buttons.append(but3)
     loading()
+
+
 def create_lose_menu():
     pause(False)
     pan = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
@@ -389,6 +404,8 @@ def create_lose_menu():
     panels.append(pan)
     texts.append(text1)
     buttons.append(but1)
+
+
 def create_end_menu():
     global end
     end = End_menu()
@@ -396,8 +413,9 @@ def create_end_menu():
     pan = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
     panels.append(pan)
 
+
 def loading():
-    pan  = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
+    pan = Panel((0, 0), (G.WIDTH, G.HEIGHT), G.BLACK, screen)
     panels.append(pan)
     global timer, length, now_active
     from draw import change_music as change
@@ -405,6 +423,8 @@ def loading():
     now_active = False
     timer = 0
     length = 0
+
+
 def update(events, keys):
     global length, timer, now_active
     screen.fill(G.WHITE)

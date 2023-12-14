@@ -41,7 +41,10 @@ def init_attack():
                      {'attack': Ball, 'count': 5, 'time': 5},
                      {'attack': Ball, 'count': 5, 'time': 5}]
                     ]
-
+def clear():
+    global hitpoints, draw_attacks
+    hitpoints = 200
+    draw_attacks = []
 class Boss():
     def __init__(self):
         self.textures = []
@@ -76,7 +79,7 @@ class Boss():
         vel = self.vel[self.n]
         if abs(self.positions[i][0] - self.abs_pos[i][0]) >= 3:
             self.vel[self.n] = ( -vel[0], vel[1])
-            vel = (-vel[0]*i  , vel[1] * i)
+            vel = (-vel[0]*i, vel[1] * i)
         elif abs(self.positions[i][1] - self.abs_pos[i][1]) >= 3:
             self.vel[self.n] = (vel[0], -vel[1])
             vel = (vel[0] * i, -vel[1] * i)

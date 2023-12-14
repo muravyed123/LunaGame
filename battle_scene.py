@@ -153,6 +153,7 @@ class Boss:
     def __init__(self, number):
         self.scene = importlib.import_module(f'bosses.boss{number}')
         self.me = self.scene.boss
+        self.scene.clear()
         self.can_move = True
     def draw(self):
         if self.can_move:
@@ -438,7 +439,7 @@ def over(p):
         can_spawn = False
         player.c_timer = 0
 def new_perem():
-    global boss_hp, attack, now_spawn, spawn, ready, timer, objects, attacks, buttons, now_score, now_kick, now_button
+    global boss_hp, attack, now_spawn, can_spawn, ready, timer, objects , buttons, now_score, now_kick, now_button, die_boss
     boss_hp = 100
     attack = False
     now_spawn = 'çant'
@@ -449,6 +450,7 @@ def new_perem():
     buttons = []
     now_button = '-1'
     now_score = 0
+    die_boss = False
     now_kick = 0    
 def start(number, last_scene):
     global player, health, boss, last, boss_hp, n_start

@@ -188,7 +188,9 @@ def change_scene(number, way, pos = None):
     global timer, now_do, player_active, scene_number, in_battle, now_scene, scene_way, need_pos
     scene_number = number
     timer = 0
-    if now_scene != None and type(now_scene)!= BattleScene:
+    print(number)
+    if now_scene != None and type(now_scene) != BattleScene:
+        print('not')
         now_do = 'animation'
         player_active = False
         in_battle = False
@@ -239,7 +241,7 @@ def go_in_battle(number):
     now_do = 'st_b_an'
 
 def lose():
-    from menu import create_end_menu as cr
+    from menu import create_lose_menu as cr
     cr()
 def animate_black():
     global timer, player_active, now_do, last_scene

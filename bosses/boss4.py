@@ -191,7 +191,10 @@ class Boss():
         self.timer += 1/ G.FPS
 
         return(False)
-
+def clear():
+    global hitpoints, draw_attacks
+    hitpoints = 200
+    draw_attacks = []
 class Attack():
     def __init__(self, pos, angle, speed, texture, size, rect_size, nr, start_t, fire):
         self.x = pos[0]

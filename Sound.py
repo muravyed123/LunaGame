@@ -18,4 +18,4 @@ def pause(pause):
         pg.mixer.music.unpause()
 def set_volume(c):
     pg.mixer.music.set_volume(c/100)
-pg.mixer.music.set_volume(0)
+#pg.mixer.music.set_volume(0)

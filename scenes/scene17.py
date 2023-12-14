@@ -55,7 +55,7 @@ def start():
     if not ch[5]:
         ar5 = Sc.Area(630, 300, (200, 410), Sc.create_checktext,
                       ('От сейфа требуется код, который пока неизвестен', (400, 300),
-                       G.BLACK, 50, pg.K_F1, Sc.change_scene, (52, 1)),
+                       G.BLACK, 50, pg.K_f, Sc.change_scene, (52, 1)),
                       Sc.delete_obj)
     else:
         if not ch[6]:

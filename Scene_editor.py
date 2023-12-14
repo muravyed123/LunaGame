@@ -17,7 +17,7 @@ active = True
 
 clock = pg.time.Clock()
 text = ''
-sc = pg.display.set_mode((0,0), pg.FULLSCREEN)
+sc = pg.display.set_mode((0, 0), pg.FULLSCREEN)
 scene.start()
 pg.font.init()
 def find_object(coords):
@@ -43,7 +43,7 @@ def save():
     for i in scene.keys:
         r = scene.sprites[i].rect
         if not scene.flip:
-            save_text += (i + ':  (' + str(r.x) + ', ' +str(r.y) + '), (' + str(r.width) + ', ' + str(r.height) +')'+ '\n' )
+            save_text += (i + ':  (' + str(r.x) + ', ' + str(r.y) + '), (' + str(r.width) + ', ' + str(r.height) + ')' + '\n')
         else:
             save_text += (i + ':  (' + str(scene.length - r.x - r.width) + ', ' + str(r.y) + '), (' + str(r.width) + ', ' + str(
                 r.height) + ')' + '\n')
@@ -51,7 +51,7 @@ def save():
     for i in scene.collisions:
         r = i.rect
         if not scene.flip:
-            save_text += str(r.x) +', ' + str(r.y) + ', (' + str(r.width) +', ' + str(r.height) + ')\n'
+            save_text += str(r.x) + ', ' + str(r.y) + ', (' + str(r.width) +', ' + str(r.height) + ')\n'
         else:
             save_text += str(scene.length - r.x - r.width) + ', ' + str(r.y) + ', (' + str(r.width) + ', ' + str(r.height) + ')\n'
     save_text += 'AREAS: \n'
